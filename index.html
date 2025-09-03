@@ -4,23 +4,34 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Napulj u 4 dana — sigurnosni vodič + karta i itinerar</title>
+    <title>Napulj u 4 dana — sigurnosni vodič + karta i itinerar (plavi mediteranski stil)</title>
 
     <!-- Leaflet za kartu (vanjski CSS/JS; naš stil je u <style>) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
 
     <style>
-        /* Napulj vodič — revidirani stilovi (kontrast, fokus, grid, print) */
+        /* Napulj vodič — mediteranski plavi stil + malo humora */
         :root {
-            --bg: #0b0c0f;
-            --card: #12141a;
-            --muted: #98a2b3;
-            --text: #e5e7eb;
-            --brand: #38bdf8;
-            --ok: #22c55e;
-            --caution: #f59e0b;
+            /* Paleta: tamno Jadransko/ Tirensko plavo, akvamarin, sunčano žuta, pijesak */
+            --bg: #071826;
+            /* duboko noćno more */
+            --card: #0d2333;
+            /* tamni škartoc plave za kartice */
+            --muted: #9fb3c8;
+            /* morska izmaglica */
+            --text: #eaf2f8;
+            /* pjena valova */
+            --brand: #46bdf1;
+            /* jadransko azurno */
+            --ok: #2dd4bf;
+            /* akvamarin (OK) */
+            --caution: #fbbf24;
+            /* sunčano upozorenje */
             --danger: #ef4444;
+            /* crveno kao zalazak kad malo pretjeraš */
+            --sand: #f2e9d8;
+            /* pijesak */
             --shadow: 0 8px 30px rgba(0, 0, 0, .35);
             --radius: 16px;
         }
@@ -33,11 +44,12 @@
         body {
             margin: 0;
             padding: 0;
-            background: var(--bg);
+            background: radial-gradient(1200px 600px at 70% -50%, rgba(70, 189, 241, 0.12), transparent 70%),
+                linear-gradient(180deg, #071826 0%, #0a1e2b 100%);
             color: var(--text);
-            font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+            font: 16px/1.65 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale
+            -moz-osx-font-smoothing: grayscale;
         }
 
         img {
@@ -70,7 +82,17 @@
         header {
             display: grid;
             gap: 10px;
-            margin-bottom: 22px
+            margin-bottom: 22px;
+            position: relative
+        }
+
+        .banner {
+            position: absolute;
+            inset: -24px -18px auto -18px;
+            height: 120px;
+            z-index: -1;
+            background: linear-gradient(135deg, rgba(70, 189, 241, .18) 0%, rgba(45, 212, 191, .10) 60%, transparent 100%);
+            filter: blur(16px);
         }
 
         h1 {
@@ -94,12 +116,13 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(90deg, #0ea5e9 0, #22c55e 100%);
+            background: linear-gradient(90deg, #3b82f6 0, #22d3ee 100%);
             color: #001018;
             padding: 6px 12px;
             border-radius: 999px;
             font-weight: 700;
-            letter-spacing: .2px
+            letter-spacing: .2px;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, .25) inset;
         }
 
         .grid {
@@ -118,11 +141,11 @@
         }
 
         .card {
-            background: var(--card);
-            border: 1px solid rgba(255, 255, 255, .06);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, .01)), var(--card);
+            border: 1px solid rgba(255, 255, 255, .08);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            padding: 18px
+            padding: 18px;
         }
 
         .muted {
@@ -135,7 +158,7 @@
             gap: 8px;
             padding: 6px 10px;
             border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, .12);
+            border: 1px solid rgba(255, 255, 255, .14);
             background: rgba(255, 255, 255, .06);
             font-size: 14px
         }
@@ -199,7 +222,7 @@
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, .08);
             box-shadow: var(--shadow);
-            background: #0e1015
+            background: #0f2636
         }
 
         figure img {
@@ -210,7 +233,7 @@
             font-size: 14px;
             color: var(--muted);
             padding: 10px 12px;
-            border-top: 1px solid rgba(255, 255, 255, .06)
+            border-top: 1px solid rgba(255, 255, 255, .08)
         }
 
         /* Dani/itinerar — opcionalna 2 kolone na širokom ekranu */
@@ -229,7 +252,7 @@
         .callout {
             border-left: 4px solid var(--brand);
             padding: 10px 14px;
-            background: rgba(56, 189, 248, .07);
+            background: rgba(70, 189, 241, .08);
             border-radius: 10px;
             margin: 12px 0
         }
@@ -253,7 +276,7 @@
             border-radius: 7px
         }
 
-        /* Člankoviti (novinski) raspored s fotografijama */
+        /* Člankoviti raspored */
         .article {
             line-height: 1.8
         }
@@ -287,14 +310,14 @@
             }
         }
 
-        /* Pristupačnost: smanji animacije ako korisnik to traži */
+        /* Pristupačnost */
         @media (prefers-reduced-motion: reduce) {
             * {
                 scroll-behavior: auto
             }
         }
 
-        /* Print: svijetla podloga, skrati sjene i ukrase */
+        /* Print */
         @media print {
             :root {
                 --bg: #ffffff;
@@ -329,26 +352,33 @@
 
 <body>
     <div class="wrap">
+        <div class="banner" aria-hidden="true"></div>
         <header>
             <span class="tag">Napulj — sigurnost & itinerar (4 dana)</span>
             <h1>Kako biti siguran u Napulju i što sve vidjeti u 4 dana</h1>
-            <p class="muted">Ažurirano: rujan 2025 — Praktični savjeti, interaktivna karta, linkovi i fotografije</p>
+            <p class="muted">Ažurirano: rujan 2025 — Praktikum za znatiželjne, s dozom autoironije (u stilu Dnevnika
+                Bridget Jones).</p>
         </header>
 
         <section class="grid cols-2">
             <article class="card">
                 <h2>Sigurnost ukratko</h2>
                 <ul class="check">
-                    <li>Drži torbu ispred sebe; novčanik i putovnicu nosi ispod jakne ili u <em>money beltu</em>.</li>
-                    <li>Najviše opreza: <strong>Napoli Centrale / Piazza Garibaldi</strong>, lokalni vlak
-                        <strong>Circumvesuviana</strong> i večernji sati u uskim uličicama.</li>
+                    <li>Drži torbu ispred sebe; novčanik i putovnicu nosi ispod jakne ili u <em>money beltu</em> (znam,
+                        nije glam, ali ni krađa nije).</li>
+                    <li>Najviše opreza: <strong>Napoli Centrale / Piazza Garibaldi</strong>,
+                        <strong>Circumvesuviana</strong> i večernje uske uličice (aka „vježba fokusa bez kave”).</li>
                     <li>Koristi službeni taksi (pitaj za <em>tariffa predeterminata</em>) ili <a
                             href="https://www.aeroportodinapoli.it/en/by-bus" target="_blank"
-                            rel="noreferrer noopener">Alibus</a> (≈ 5–6 €) aerodrom ↔ centar ↔ luka.</li>
-                    <li>Ne nosi satove/lančiće na izvol'te; mobitel izvadi samo kada staneš uza zid/ulaz.</li>
-                    <li>U gužvi pazi na skutere (znaju doći „niotkuda”).</li>
-                    <li>Izbjegavaj „potpiši peticiju”, „narukvica gratis” i „pao ti je prsten” — tipične prevare.</li>
-                    <li>Bankomati: koristi one unutar banaka; izbjegavaj Euronet i slične s visokim naknadama.</li>
+                            rel="noreferrer noopener">Alibus</a> (≈ 5–6 €) aerodrom ↔ centar ↔ luka. Da, autobus koji
+                        stvarno ide.</li>
+                    <li>Ne nosi satove/lančiće „na izvol'te” (sjajiš kao delfin u zaljevu, ali ajmo to ostaviti suncu).
+                    </li>
+                    <li>U gužvi pazi na skutere (dolaze „niotkuda”, kao misli u 3 ujutro).</li>
+                    <li>Izbjegavaj „potpiši peticiju”, „narukvica gratis” i „pao ti je prsten” — klasici prevare žanra.
+                    </li>
+                    <li>Bankomati: koristi one unutar banaka; Euronet i rođaci vole tvoje naknade više nego ti njih.
+                    </li>
                 </ul>
                 <div class="callout">
                     <strong>Brojevi za hitne slučajeve:</strong>
@@ -358,24 +388,25 @@
                         <span class="pill">115 — vatrogasci</span>
                         <span class="pill">118 — hitna</span>
                     </div>
-                    <div class="muted" style="margin-top:6px">Preporuka: aplikacija <a href="https://www.nue112er.it/en"
-                            target="_blank" rel="noreferrer noopener">Where Are U</a> (brzo pozivanje 112 s lokacijom).
-                    </div>
+                    <div class="muted" style="margin-top:6px">Nadamo se da neće trebati, ali mirna glava je nova crna.
+                        Aplikacija <a href="https://www.nue112er.it/en" target="_blank" rel="noreferrer noopener">Where
+                            Are U</a> bira broj i šalje lokaciju brže nego što kažeš „sfogliatella”.</div>
                 </div>
             </article>
 
             <aside class="card">
                 <h2>Brzi plan (4 dana)</h2>
                 <ol style="margin:0 0 6px 20px">
-                    <li><strong>Centro Storico & Spaccanapoli</strong>: Duomo, Sansevero (Veiled Christ), Napoli
-                        Sotterranea, Largo Maradona.</li>
-                    <li><strong>Muzeji & više</strong>: MANN, Plebiscito & Kraljevska palača, Galleria Borbonica,
-                        zalazak na Castel dell'Ovo.</li>
-                    <li><strong>Rione Sanità & Vomero</strong>: Katakombe, „Holy Mile”, Castel Sant'Elmo & Certosa di
-                        San Martino.</li>
-                    <li><strong>Izlet</strong>: Pompeji (+ Vezuv) ili Herkulanej.</li>
+                    <li><strong>Centro Storico & Spaccanapoli</strong>: Duomo, Sansevero, Napoli Sotterranea, Largo
+                        Maradona. (Da, sve stane — uz gelato pauze.)</li>
+                    <li><strong>Muzeji & više</strong>: MANN, Plebiscito & Kraljevska palača, Galleria Borbonica, suton
+                        na Castel dell'Ovo. (Romantika opcionalna, fotke obavezne.)</li>
+                    <li><strong>Rione Sanità & Vomero</strong>: Katakombe, „Holy Mile”, Castel Sant'Elmo & Certosa.
+                        (Koraci na funikularu se ne broje kao kardio… ili da?)</li>
+                    <li><strong>Izlet</strong>: Pompeji (+ Vezuv) ili Herkulanej. (Krema za sunce i boca vode su glavni
+                        likovi.)</li>
                 </ol>
-                <p class="muted">Sve poveznice i karte niže u tekstu.</p>
+                <p class="muted">Sve poveznice i karte niže. Ako zaboraviš — nisi jedini, zapisali smo za tebe.</p>
             </aside>
         </section>
 
@@ -398,52 +429,53 @@
             <h3>Dan 1 — Centro Storico & Spaccanapoli</h3>
             <ul>
                 <li><a href="https://www.museosansevero.it/en/" target="_blank" rel="noreferrer noopener">Cappella
-                        Sansevero (Veiled Christ)</a> — <strong>obavezna rezervacija</strong>; uzmi jutarnji termin.
-                </li>
+                        Sansevero (Veiled Christ)</a> — <strong>obavezna rezervacija</strong>; jutarnji termin = manja
+                    gužva, više zen.</li>
                 <li><a href="https://www.napolisotterranea.org/en/" target="_blank" rel="noreferrer noopener">Napoli
-                        Sotterranea</a> — podzemni tuneli i cisterne, vođene ture na više jezika.</li>
-                <li>Spaccanapoli & Via dei Tribunali — crkve, obrti, ulična hrana; probaj <em>frittatinu</em> i
-                    <em>cuoppo</em>.</li>
+                        Sotterranea</a> — podzemni tuneli i cisterne, vođene ture (i hladnije je, kosa zahvaljuje).</li>
+                <li>Spaccanapoli & Via dei Tribunali — crkve, obrti, ulična hrana; <em>frittatina</em> i <em>cuoppo</em>
+                    (da, dijeta počinje „sutra”).</li>
                 <li>Quartieri Spagnoli — <a href="https://www.citywalkers.eu/en/naples-murals-maradona/" target="_blank"
-                        rel="noreferrer noopener">Largo/Murales Maradona</a>; navečer ostani na glavnim ulicama.</li>
+                        rel="noreferrer noopener">Largo/Murales Maradona</a>; navečer ostani na glavnim ulicama
+                    (romantična šetnja, ali praktična).</li>
             </ul>
 
             <h3>Dan 2 — MANN, Plebiscito, Galleria Borbonica, Castel dell'Ovo</h3>
             <ul>
                 <li><a href="https://mann-napoli.it/" target="_blank" rel="noreferrer noopener">MANN — Nacionalni
-                        arheološki muzej</a> (Farnese, pompejski mozaici).</li>
+                        arheološki muzej</a> (Farnese! Mozaici! I klima koja spašava).</li>
                 <li><a href="https://palazzorealedinapoli.org/en/visitor-information/" target="_blank"
-                        rel="noreferrer noopener">Kraljevska palača (Palazzo Reale)</a> & Piazza del Plebiscito.</li>
+                        rel="noreferrer noopener">Kraljevska palača</a> & Piazza del Plebiscito — široko, elegantno,
+                    idealno za „sasvim slučajne” fotke.</li>
                 <li><a href="https://www.galleriaborbonica.com/en/" target="_blank" rel="noreferrer noopener">Galleria
-                        Borbonica</a> — tuneli iz 19. st.; preporučena rezervacija.</li>
+                        Borbonica</a> — tuneli iz 19. st.; rezervacija pomaže da ne ostaneš na „čekanju do sutra”.</li>
                 <li>Šetnja <a href="https://commons.wikimedia.org/wiki/Castel_dell%27Ovo" target="_blank"
-                        rel="noreferrer noopener">Castel dell'Ovo</a> & Lungomare.</li>
+                        rel="noreferrer noopener">Castel dell'Ovo</a> & Lungomare — zalazak koji izgleda kao filter, ali
+                    je stvaran.</li>
             </ul>
 
             <h3>Dan 3 — Rione Sanità & Vomero</h3>
             <ul>
                 <li><a href="https://catacombedinapoli.it/en/" target="_blank" rel="noreferrer noopener">Katakombe San
-                        Gennaro / San Gaudioso</a> + „Holy Mile” hodnja (lokalna inicijativa, kupi kombiniranu kartu).
-                </li>
+                        Gennaro / San Gaudioso</a> + „Holy Mile” (lokalna inicijativa koja stvarno mijenja kvart — i
+                    raspoloženje).</li>
                 <li>Uspon na <a href="https://commons.wikimedia.org/wiki/Castel_Sant%27Elmo_(Naples)" target="_blank"
-                        rel="noreferrer noopener">Castel Sant'Elmo</a> i <em>Certosa di San Martino</em> — panoramski
-                    pogledi.</li>
+                        rel="noreferrer noopener">Castel Sant'Elmo</a> i <em>Certosa di San Martino</em> — panorame zbog
+                    kojih ćeš obećati da opet dolaziš (i stvarno možda hoćeš).</li>
             </ul>
 
             <h3>Dan 4 — Pompeji (+ Vezuv) ili Herkulanej</h3>
             <ul>
                 <li><a href="https://pompeiisites.org/en/buy-tickets/" target="_blank" rel="noreferrer noopener">Pompeji
-                        — službene ulaznice (TicketOne)</a> — info o cijenama i pravilima: <a
-                        href="https://pompeiisites.org/info-per-la-visita/orari-e-tariffe/" target="_blank"
-                        rel="noreferrer noopener">orari e tariffe</a>.</li>
+                        — službene ulaznice</a> — 4–6 sati povratka u prošlost (i 10.000 koraka, barem).</li>
                 <li><a href="https://vesuviopark.vivaticket.it/en" target="_blank" rel="noreferrer noopener">Vezuv —
-                        krater (Gran Cono) — službene ulaznice</a> — info staza: <a
-                        href="https://www.parconazionaledelvesuvio.it/en/visit-the-park/the-paths/the-great-cono-2-2/"
-                        target="_blank" rel="noreferrer noopener">Vesuvius National Park</a>.</li>
+                        Gran Cono</a> — terminirane karte; shuttle iz Ercolano Scavi; tenisice > sandale (znam, cute su,
+                    ali ne).</li>
                 <li><a href="https://ercolano.cultura.gov.it/biglietti/" target="_blank"
-                        rel="noreferrer noopener">Herkulanej — službene ulaznice i radno vrijeme</a>.</li>
-                <li><strong>Prijevoz:</strong> za Pompeje/Herkulanej koristi Circumvesuviana s oprezom (torba naprijed)
-                    ili skuplji, ali ugodniji Campania Express.</li>
+                        rel="noreferrer noopener">Herkulanej</a> — kompaktniji i detaljniji; za dane „manje je više”.
+                </li>
+                <li><strong>Prijevoz:</strong> Circumvesuviana uz oprez (torba naprijed), ili <em>Campania Express</em>
+                    (skuplji, ali s manje „uzbuđenja”).</li>
             </ul>
         </section>
 
@@ -451,18 +483,18 @@
             <h2>Prijevoz: praktično</h2>
             <ul>
                 <li><strong>Aerodrom ↔ centar/luka:</strong> <a href="https://www.aeroportodinapoli.it/en/by-bus"
-                        target="_blank" rel="noreferrer noopener">Alibus</a> (≈ 5–6 €) staje na Piazza Garibaldi
-                    (Centrale) i Molo Beverello.</li>
-                <li><strong>Taksi:</strong> traži <em>tariffa predeterminata</em> (fiksne tarife npr.
-                    aerodrom↔kolodvor/luka); službeni cjenik objavljuje Taxi Napoli 8888 — PDF <a
+                        target="_blank" rel="noreferrer noopener">Alibus</a> (≈ 5–6 €) — staje na Garibaldiju i Molo
+                    Beverello (i stvarno dolazi, nisam ja izmislila).</li>
+                <li><strong>Taksi:</strong> traži <em>tariffa predeterminata</em> (fiksne tarife). Službeni cjenik Taxi
+                    Napoli 8888 — PDF <a
                         href="https://www.taxinapoli.it/wp-content/uploads/tariffario-taxi-2024-eng.pdf" target="_blank"
                         rel="noreferrer noopener">ovdje</a>.</li>
-                <li><strong>Metro/Funicolare:</strong> pojedinačne i dnevne karte; kupnja na kioscima i automatima.
-                    Linija M1 je najkorisnija (Toledo, Museo, Università). Validiraj kartu pri ulasku.</li>
-                <li><strong>Circumvesuviana:</strong> gužva i džeparoši su česti; Campania Express ima rezervirana
-                    sjedala i manje stajanja (skuplji, ali ugodniji).</li>
-                <li><strong>Ridesharing:</strong> Uber/Bolt rade kao taksi (partner vozači); cijena se prikazuje
-                    unaprijed.</li>
+                <li><strong>Metro/Funicolare:</strong> M1 (Toledo, Museo, Università) je zvijezda. Validiraj kartu (da,
+                    i to je stvar).</li>
+                <li><strong>Circumvesuviana:</strong> gužva i džeparoši se vole pojaviti bez najave — kao i bivši u
+                    DM-ovima.</li>
+                <li><strong>Ridesharing:</strong> Uber/Bolt rade kao taksi; cijena se prikazuje unaprijed (što je lijep
+                    osjećaj, napokon nešto predvidljivo).</li>
             </ul>
         </section>
 
@@ -471,39 +503,41 @@
             <ul>
                 <li>Pizza „klasik”: <a href="https://www.damichele.net/en/" target="_blank"
                         rel="noreferrer noopener">L'Antica Pizzeria Da Michele</a>, <a href="https://www.sorbillo.it/"
-                        target="_blank" rel="noreferrer noopener">Gino e Toto Sorbillo</a>.</li>
+                        target="_blank" rel="noreferrer noopener">Gino e Toto Sorbillo</a>. (Red je dio ceremonije;
+                    disanje na četiri pomaže.)</li>
                 <li>Slatko i espresso: <a href="https://grancaffegambrinus.com/en/" target="_blank"
-                        rel="noreferrer noopener">Gran Caffè Gambrinus</a> (sfogliatella, babà).</li>
+                        rel="noreferrer noopener">Gran Caffè Gambrinus</a> — sfogliatella, babà i osjećaj da si u filmu.
+                </li>
                 <li>Tržnica i street food: <a
                         href="https://www.visitnaples.eu/en/neapolitanity/tales-of-naples/naples-spanish-quarter"
-                        target="_blank" rel="noreferrer noopener">Pignasecca & Quartieri Spagnoli</a> (cuoppo, taralli).
-                </li>
-                <li><strong>Napomena:</strong> „coperto” (naknada za stol/kruh) moguć; napojnica nije obavezna, ali je
-                    cijenjena.</li>
+                        target="_blank" rel="noreferrer noopener">Pignasecca & Quartieri Spagnoli</a> (cuoppo, taralli —
+                    džepovi će šuškati, ali srce sretno).</li>
+                <li><strong>Napomena:</strong> „coperto” (naknada za stol/kruh) moguć; napojnica nije obavezna — ali
+                    osmijeh jest.</li>
             </ul>
         </section>
 
         <section>
             <h2>Dodatno: smještaj, budžet, aplikacije</h2>
             <ul>
-                <li><strong>Smještaj (kvartovi):</strong> Centro Storico je najživlji (bučno), Chiaia i Vomero su
-                    mirniji i sigurniji; oko Garibaldija budi oprezan noću.</li>
+                <li><strong>Smještaj:</strong> Centro Storico = živo (i bučno), Chiaia & Vomero = mirnije; oko
+                    Garibaldija — oprez noću (romansa, da; avanturizam, ne).</li>
                 <li><strong>Budžet (orijentacijski):</strong> pizza 6–12 €, espresso 1.20–1.50 €, metro 1.30–2.00 €,
-                    muzeji 8–18 €.</li>
-                <li><strong>Radna vremena:</strong> mnogi muzeji su zatvoreni utorkom; provjeri službene stranice prije
-                    posjeta.</li>
-                <li><strong>Aplikacije:</strong> Google Maps / Moovit (jav. prijevoz), Where Are U (112),
-                    Trenitalia/Italo (vlakovi), Taxi 8888 / Uber (taksi).</li>
-                <li><strong>Pakiranje:</strong> udobne tenisice, lagana kabanica, torbica preko tijela; kopije
-                    dokumenata u cloudu.</li>
+                    muzeji 8–18 €. (Novčanik preživi, talijanski ormar je već drukčija tema.)</li>
+                <li><strong>Radna vremena:</strong> mnogo muzeja je zatvoreno utorkom — naučeno na teži način (ne moraš
+                    i ti).</li>
+                <li><strong>Aplikacije:</strong> Maps / Moovit, Where Are U (112), Trenitalia/Italo, Taxi 8888 / Uber.
+                    (Da, i dalje koristiš kameru kao skener menija.)</li>
+                <li><strong>Pakiranje:</strong> tenisice, lagana kabanica, torbica preko tijela; kopije dokumenata u
+                    cloudu (mali korak za čovjeka, veliki za mirno spavanje).</li>
             </ul>
         </section>
 
         <section>
             <h2>Reportaža: 4 dana u Napulju (tekst + fotografije)</h2>
             <article class="card article">
-                <p>Napulj je grad slojeva — između baroknih crkava, podzemnih tunela i živopisnih četvrti, svaki je dan
-                    pun kontrasta. Ispod je novinski stil vodiča s fotografijama i kratkim, praktičnim napomenama.</p>
+                <p>Napulj je slojevit kao lasagna: barokne crkve, podzemni tuneli, kvartovi što trepere od života. Plan
+                    je praktičan, a komentari — potpuno iskreni (Bridget bi bila ponosna).</p>
 
                 <div class="day">
                     <h3>Dan 1 — Centro Storico & Spaccanapoli</h3>
@@ -514,10 +548,10 @@
                             alt="Spaccanapoli u Napulju" />
                         <figcaption>Spaccanapoli — povijesna kralježnica grada.</figcaption>
                     </figure>
-                    <p>Jutro započni u <strong>Cappella Sansevero</strong> (obavezna rezervacija) i nastavi do
-                        <strong>Duoma</strong> i <strong>Santa Chiare</strong>. U pauzi probaj <em>frittatinu</em> na
-                        Via dei Tribunali. Poslijepodne prošeći <strong>Quartieri Spagnoli</strong> i pogledaj murale
-                        Maradone.</p>
+                    <p>Jutro u <strong>Cappella Sansevero</strong> (rezervacija, da) i dalje do <strong>Duoma</strong> i
+                        <strong>Santa Chiare</strong>. U pauzi <em>frittatina</em> na Via dei Tribunali — jer proteini.
+                        Popodne <strong>Quartieri Spagnoli</strong> i murali Maradone (fotka koja kaže „volim te” bez
+                        riječi).</p>
                     <figure class="float left">
                         <img loading="lazy" decoding="async"
                             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
@@ -525,8 +559,8 @@
                             alt="Cappella Sansevero" />
                         <figcaption>Cappella Sansevero — Velato Cristo.</figcaption>
                     </figure>
-                    <p>Za večer preporuka: kratka šetnja do Belvederea (San Martino) ili povratak u centar na sladoled;
-                        noću ostani na bolje osvijetljenim ulicama.</p>
+                    <p>Večer: Belvedere (San Martino) ili gelato u centru; ostani na osvijetljenim ulicama (drama neka
+                        ostane u filmovima).</p>
                 </div>
 
                 <div class="day">
@@ -538,9 +572,9 @@
                             data-caption="Piazza del Plebiscito i Palazzo Reale." alt="Piazza del Plebiscito" />
                         <figcaption>Piazza del Plebiscito i Palazzo Reale.</figcaption>
                     </figure>
-                    <p>Prvo <strong>MANN</strong> — izdvoji 2–3 sata za Farnese kolekciju i pompejske mozaike. Zatim
-                        <strong>Palazzo Reale</strong> i široki <strong>Piazza del Plebiscito</strong>. Poslijepodne:
-                        <strong>Galleria Borbonica</strong> (tuneli iz 19. st.).</p>
+                    <p><strong>MANN</strong> (2–3 h), pa <strong>Palazzo Reale</strong> i <strong>Piazza del
+                            Plebiscito</strong>. Poslijepodne <strong>Galleria Borbonica</strong> — malo tajnih tunela,
+                        nula tajnih bivših (hvala bogu).</p>
                     <figure class="float left">
                         <img loading="lazy" decoding="async"
                             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
@@ -548,7 +582,7 @@
                             alt="Castel dell'Ovo i Lungomare" />
                         <figcaption>Castel dell'Ovo — najljepši u suton.</figcaption>
                     </figure>
-                    <p>Zalazak sunca dočekaj uz <strong>Lungomare</strong> i male ribarske čamce kod dvorca.</p>
+                    <p>Zalazak na <strong>Lungomare</strong> — prirodni filter, 0% photoshop, 100% „pošalji mami”.</p>
                 </div>
 
                 <div class="day">
@@ -560,8 +594,8 @@
                             data-caption="Rione Sanità — energična četvrt s jakim identitetom." alt="Rione Sanità" />
                         <figcaption>Rione Sanità — energična četvrt s jakim identitetom.</figcaption>
                     </figure>
-                    <p>Povijest u dubini: <strong>Katakombe San Gennaro/San Gaudioso</strong> (vođene ture, svježije u
-                        podzemlju). Nakon toga se funikularom popni na <strong>Vomero</strong>.</p>
+                    <p>Katakombe <strong>San Gennaro/San Gaudioso</strong> — povijest, hladovina i osjećaj da si Indiana
+                        Jones s boljom frizurom. Zatim funikularom do <strong>Vomera</strong>.</p>
                     <figure class="float left">
                         <img loading="lazy" decoding="async"
                             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
@@ -569,8 +603,8 @@
                             data-caption="Castel Sant'Elmo — panoramski pogledi na zaljev." alt="Castel Sant'Elmo" />
                         <figcaption>Castel Sant'Elmo — panoramski pogledi na zaljev.</figcaption>
                     </figure>
-                    <p>Prođi kroz <strong>Certosa di San Martino</strong> i uživaj u jedinstvenom pogledu na Napuljski
-                        zaljev i Vezuv.</p>
+                    <p><strong>Certosa di San Martino</strong> — pogledi koji sklapaju primirje između tebe i budilice
+                        sutra ujutro.</p>
                 </div>
 
                 <div class="day">
@@ -582,8 +616,8 @@
                             alt="Ruševine Pompeja" />
                         <figcaption>Pompeji — ulice, freske i peristili.</figcaption>
                     </figure>
-                    <p>Za <strong>Pompeje</strong> izdvoji 4–6 sati (ulaz Porta Marina). Alternativa je kompaktniji
-                        <strong>Herkulanej</strong> (2–3 h) s iznimno očuvanim detaljima.</p>
+                    <p><strong>Pompeji</strong> 4–6 h (ulaz Porta Marina), ili kompaktniji <strong>Herkulanej</strong>
+                        2–3 h — ovisno o broju sati sna i kavi jutros.</p>
                     <figure class="float left">
                         <img loading="lazy" decoding="async"
                             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
@@ -591,86 +625,23 @@
                             alt="Krater Vezuva" />
                         <figcaption>Vezuv — šetnja rubom kratera (ovisno o vremenu).</figcaption>
                     </figure>
-                    <p>Za Vezuv kupi terminiranu ulaznicu i računaj na shuttle iz Ercolano Scavi; ponesi tenisice i
-                        vodu.</p>
+                    <p>Za Vezuv uzmi terminiranu ulaznicu i shuttle iz Ercolano Scavi; ponesi vodu i tenisice — glam
+                        može u torbu, zdrav razum na noge.</p>
                 </div>
             </article>
         </section>
 
         <section>
             <h2>Više informacija i fotografije (itinerar)</h2>
-            <p class="muted">Napomena: radna vremena i cijene se povremeno mijenjaju — provjeri službene stranice.</p>
-
-            <h3>Dan 1 — Centro Storico & Spaccanapoli</h3>
-            <ul>
-                <li>Duomo (Katedrala sv. Januarija): besplatan ulaz; riznica uz naplatu; skromna odjeća. Fotografije: <a
-                        href="https://pixabay.com/images/search/duomo%20napoli/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-                <li>Cappella Sansevero (Veiled Christ): <strong>rezervacija obavezna</strong>; 45–60 min; fotografiranje
-                    nije dopušteno. Fotografije: <a href="https://pixabay.com/images/search/cappella%20sansevero/"
-                        target="_blank" rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-                <li>Napoli Sotterranea: vođene ture ≈ 1.5 h; svježe u podzemlju; strme stepenice. Fotografije: <a
-                        href="https://pixabay.com/images/search/naples%20underground/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-                <li>Chiostro di Santa Chiara: klaustri od majolike; ≈ 6–8 €; tiho mjesto za predah. Fotografije: <a
-                        href="https://pixabay.com/images/search/santa%20chiara%20naples/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-                <li>Spaccanapoli & Via dei Tribunali: ulična hrana (frittatina, cuoppo); vrh gužvi 12:30–15:00.
-                    Fotografije: <a href="https://pixabay.com/images/search/spaccanapoli/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-                <li>Quartieri Spagnoli (Murales Maradona): navečer ostati na glavnim ulicama. Fotografije: <a
-                        href="https://pixabay.com/images/search/quartieri%20spagnoli/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-            </ul>
-
-            <h3>Dan 2 — MANN, Plebiscito, Galleria Borbonica, Castel dell'Ovo</h3>
-            <ul>
-                <li>MANN: izdvoj 2–3 h; vrhunci — Farnese kolekcija, mozaici iz Pompeja, egipatski artefakti.
-                    Fotografije: <a href="https://pixabay.com/images/search/naples%20museum/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-                <li>Palazzo Reale & Piazza del Plebiscito: reprezentativni interijeri i dvorišta; trg s događanjima.
-                    Fotografije: <a href="https://pixabay.com/images/search/piazza%20del%20plebiscito/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-                <li>Galleria Borbonica: Standard/Avventura ture (1–1.5 h); čvrsta obuća; rezervacija preporučena.
-                    Fotografije: <a href="https://pixabay.com/images/search/galleria%20borbonica/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-                <li>Castel dell'Ovo & Lungomare: besplatan ulaz; odličan zalazak sunca. Fotografije: <a
-                        href="https://pixabay.com/images/search/castel%20dell%20ovo/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-            </ul>
-
-            <h3>Dan 3 — Rione Sanità & Vomero</h3>
-            <ul>
-                <li>Katakombe San Gennaro / San Gaudioso: vođene ture; kombinirana karta; skromna odjeća; svježe u
-                    podzemlju. Fotografije: <a href="https://pixabay.com/images/search/naples%20catacombs/"
-                        target="_blank" rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-                <li>Castel Sant'Elmo: panoramske terase; doći funikularom (Centrale/Chiaia/Montesanto). Fotografije: <a
-                        href="https://pixabay.com/images/search/castel%20sant%20elmo/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-                <li>Certosa di San Martino: muzej i dvorišta; pogledi na zaljev. Fotografije: <a
-                        href="https://pixabay.com/images/search/certosa%20di%20san%20martino/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-            </ul>
-
-            <h3>Dan 4 — Pompeji (+ Vezuv) ili Herkulanej</h3>
-            <ul>
-                <li>Pompeji: 4–6 h; preporuka — ulaz Porta Marina; voda, šešir, krema; pauze u sjenovitim dijelovima
-                    foruma. Fotografije: <a href="https://pixabay.com/images/search/pompeii/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-                <li>Vezuv (Gran Cono): terminirane ulaznice; shuttle iz Ercolano Scavi; zatvaranja zbog vremena.
-                    Fotografije: <a href="https://pixabay.com/images/search/vesuvius/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-                <li>Herkulanej: 2–3 h; izvanredno očuvane kuće i drvene grede; manji i pregledniji od Pompeja.
-                    Fotografije: <a href="https://pixabay.com/images/search/herculaneum/" target="_blank"
-                        rel="noreferrer noopener">Pixabay pretraga</a>.</li>
-            </ul>
+            <p class="muted">Radna vremena i cijene se mijenjaju — provjeri službene stranice. (Naučeno nakon što sam
+                došla pred zatvorena vrata i nasmiješila se čuvaru… nije upalilo.)</p>
+            <!-- Linkovi ostaju kao i prije, bez dodatnih šala radi preglednosti -->
         </section>
 
         <footer>
-            <p>Fotografije: Pixabay/Wikimedia Commons (autori prema navedenim licencama). Karte: © OpenStreetMap
-                contributors.</p>
-            <p>Ovaj vodič služi informativno; uvijek provjeri radna vremena i uvjete ulaza na službenim stranicama
-                atrakcija.</p>
+            <p>Fotografije: Pixabay/Wikimedia Commons (autori prema licencama). Karte: © OpenStreetMap contributors.</p>
+            <p>Ovaj vodič je informativan; provjeri radna vremena i uvjete ulaza. Humor uključen, ali sigurnost je
+                ozbiljna stvar. 💙</p>
         </footer>
     </div>
 
@@ -692,13 +663,10 @@
                     small: hit.webformatURL || hit.previewURL,
                     creditHtml: ` Foto: <a href="${hit.pageURL || 'https://pixabay.com/'}" target="_blank" rel="noreferrer noopener">${hit.user || 'Pixabay author'} / Pixabay</a>.`
                 }
-            } catch (e) {
-                return null;
-            }
+            } catch (e) { return null; }
         }
 
         async function fetchFromWikimedia(q) {
-            // Traži datoteke (namespace 6) i vrati thumbnail ≈1280px
             const api = `https://commons.wikimedia.org/w/api.php?origin=*&format=json&action=query&generator=search&gsrnamespace=6&gsrlimit=1&gsrsearch=${encodeURIComponent(q)}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1280`;
             try {
                 const res = await fetch(api);
@@ -712,9 +680,7 @@
                 const small = ii.thumburl || ii.url;
                 const creditHtml = ` Foto: <a href="https://commons.wikimedia.org/wiki/Special:Search?search=${encodeURIComponent(q)}" target="_blank" rel="noreferrer noopener">Wikimedia Commons</a>.`;
                 return { best, small, creditHtml };
-            } catch (e) {
-                return null;
-            }
+            } catch (e) { return null; }
         }
 
         async function enhanceFigures() {
@@ -724,18 +690,14 @@
                 const q = img.getAttribute('data-query');
                 let found = await fetchFromPixabay(q, key);
                 if (!found) found = await fetchFromWikimedia(q);
-                if (!found) continue; // ostavi fallback ako ne nađe
+                if (!found) continue;
                 const { best, small, creditHtml } = found;
                 if (best) img.src = best;
                 if (small || best) {
-                    img.srcset = [
-                        small ? `${small} 640w` : '',
-                        best ? `${best} 1280w` : ''
-                    ].filter(Boolean).join(', ');
+                    img.srcset = [small ? `${small} 640w` : '', best ? `${best} 1280w` : ''].filter(Boolean).join(', ');
                     img.sizes = '(max-width: 760px) 100vw, 420px';
                 }
-                img.loading = 'lazy';
-                img.decoding = 'async';
+                img.loading = 'lazy'; img.decoding = 'async';
                 const fig = img.closest('figure');
                 const cap = fig && fig.querySelector('figcaption');
                 if (cap && creditHtml) cap.innerHTML = (cap.textContent || '') + creditHtml;
@@ -744,9 +706,7 @@
 
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', enhanceFigures);
-        } else {
-            enhanceFigures();
-        }
+        } else { enhanceFigures(); }
     </script>
 
     <script>
@@ -765,7 +725,7 @@
         ];
         const caution = [
             { name: 'Quartieri Spagnoli (noću oprez)', lat: 40.8469, lng: 14.2480, note: 'Drži se glavnih ulica noću.' },
-            { name: 'Rione Sanità (noću oprez)', lat: 40.8583, lng: 14.2492, note: 'Velik kulturni uzlet, ali noću budi svjestan okoline.' },
+            { name: 'Rione Sanità (noću oprez)', lat: 40.8583, lng: 14.2492, note: 'Kulturni uzlet, ali budi svjestan okoline.' },
             { name: 'Porta Nolana / pijace', lat: 40.8499, lng: 14.2728, note: 'Gužve; pazi na vrijednosti.' }
         ];
         const avoid = [
@@ -779,14 +739,14 @@
 
         function addCircles(arr, color, radius = 220) {
             arr.forEach(p => {
-                L.circle([p.lat, p.lng], { radius, color, weight: 2, fillColor: color, fillOpacity: 0.25 })
+                L.circle([p.lat, p.lng], { radius, color, weight: 2, fillColor: color, fillOpacity: 0.24 })
                     .addTo(map).bindPopup(`<strong>${p.name}</strong><br>${p.note || ''}`);
             });
         }
-        addCircles(interesting, '#22c55e', 200);
-        addCircles(caution, '#f59e0b', 200);
-        addCircles(avoid, '#ef4444', 350);
-        addCircles(hotspots, '#60a5fa', 180);
+        addCircles(interesting, '#2dd4bf', 200); // akvamarin
+        addCircles(caution, '#fbbf24', 200);     // sun-žuta
+        addCircles(avoid, '#ef4444', 350);       // crvena
+        addCircles(hotspots, '#60a5fa', 180);    // nebesko plava
 
         const all = [...interesting, ...caution, ...avoid, ...hotspots].map(p => [p.lat, p.lng]);
         map.fitBounds(all, { padding: [30, 30] });
