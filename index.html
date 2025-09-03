@@ -94,84 +94,19 @@
         <div class="day">
             <h2>Dan 1 – “Sigurni” početak</h2>
             <div class="spot">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Piazza_del_Plebiscito_Napoli.jpg/1280px-Piazza_del_Plebiscito_Napoli.jpg"
+                <img src="https://imgs.search.brave.com/oimMCTpXOleCGQ3houwC4qZX84GGmf6PyrAz8Fh3-Cw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS1jZG4udHJpcGFk/dmlzb3IuY29tL21l/ZGlhL3Bob3RvLW8v/MTgvMjAvYzcvN2Iv/cGlhenphLWRlbC1w/bGViaXNjaXRvLmpw/Zw"
                     alt="Piazza del Plebiscito">
                 <p><b>Piazza del Plebiscito</b> – najveći trg u Napulju, mjesto gdje se održavaju koncerti, prosvjedi i
-                    mafijaške parade. Ako sjednete na stepenice i gledate ljude, vidjet ćete pola grada kako šeta – i
-                    drugu polovicu kako im gleda u džepove.</p>
+                    mafijaške parade.</p>
             </div>
             <div class="spot">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Castel_dell%27Ovo_Napoli.jpg/1280px-Castel_dell%27Ovo_Napoli.jpg"
+                <img src="https://imgs.search.brave.com/d0Bz53v96XVVzGoXlfU5RMl7RPNRzOKJkMuGgxwkCB4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS1jZG4udHJpcGFk/dmlzb3IuY29tL21l/ZGlhL3Bob3RvLW8v/MDYvYzUvN2UvMzEv/Y2FzdGVsbC1kZWxs/LW92by5qcGc"
                     alt="Castel dell'Ovo">
-                <p><b>Castel dell’Ovo</b> – legenda kaže da se u temeljima skriva čarobno jaje koje čuva grad. Pogled na
-                    zaljev je nevjerojatan – ako vas ne omete galeb koji cilja točno vašu glavu.</p>
+                <p><b>Castel dell’Ovo</b> – legenda kaže da se u temeljima skriva čarobno jaje koje čuva grad.</p>
             </div>
         </div>
 
         <div class="day">
             <h2>Dan 2 – Prava doza adrenalina</h2>
             <div class="spot">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Quartieri_Spagnoli.jpg/1280px-Quartieri_Spagnoli.jpg"
-                    alt="Quartieri Spagnoli">
-                <p><b>Quartieri Spagnoli</b> – uske uličice koje mirišu na tjesteninu, marihuanu i benzin s Vespi.
-                    Klinci na skuterima džeparaju s vještinom koju ne biste vidjeli ni u “Ocean’s Eleven”.</p>
-            </div>
-            <div class="spot">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Forcella%2C_Napoli.jpg/1280px-Forcella%2C_Napoli.jpg"
-                    alt="Forcella">
-                <p><b>Forcella</b> – kvart koji je istovremeno povijesno srce Napulja i epicentar Camorre. Grafiti su
-                    više od umjetnosti – oni su oglasna ploča za mafiju.</p>
-            </div>
-        </div>
-
-        <div class="day">
-            <h2>Dan 3 – Ekstremni turizam</h2>
-            <div class="spot">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Le_Vele_di_Scampia.jpg/1280px-Le_Vele_di_Scampia.jpg"
-                    alt="Scampia">
-                <p><b>Scampia</b> – betonska džungla, poznata iz serije <i>Gomorra</i>. Ako vas privlači “urbex” i
-                    mislite da ste neuništivi, možda se odvažite. Ako ne – pogledajte fotografije online i uštedite si
-                    traumu.</p>
-            </div>
-            <div class="spot">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Vesuvius_from_Pompeii_%28hires%29.jpg/1280px-Vesuvius_from_Pompeii_%28hires%29.jpg"
-                    alt="Vezuv">
-                <p><b>Vezuv</b> – vulkan koji je 79. godine uništio Pompeje i Herkulanej. Danas je turistička atrakcija
-                    i podsjetnik da Napulj nije opasan samo zbog mafije.</p>
-            </div>
-        </div>
-
-        <h2>Karta opasnih i sigurnih zona</h2>
-        <div id="map"></div>
-    </main>
-
-    <footer>
-        <p>© 2025 Crni vodič kroz Napulj – “Preživjeli turisti od 2025.”</p>
-    </footer>
-
-    <script>
-        var map = L.map('map').setView([40.8522, 14.2681], 12);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        // Sigurne zone
-        L.circle([40.8359, 14.2488], { color: "green", fillColor: "green", fillOpacity: 0.3, radius: 700 })
-            .addTo(map).bindPopup("<b>Piazza del Plebiscito</b><br/>Relativno sigurno, osim galebova.");
-        L.circle([40.8309, 14.2476], { color: "green", fillColor: "green", fillOpacity: 0.3, radius: 600 })
-            .addTo(map).bindPopup("<b>Castel dell’Ovo</b><br/>Jedina opasnost je cijena kave.");
-
-        // Oprez
-        L.circle([40.8410, 14.2480], { color: "yellow", fillColor: "yellow", fillOpacity: 0.4, radius: 600 })
-            .addTo(map).bindPopup("<b>Quartieri Spagnoli</b><br/>Autentično, ali čuvajte džepove.");
-        L.circle([40.8529, 14.2634], { color: "yellow", fillColor: "yellow", fillOpacity: 0.4, radius: 600 })
-            .addTo(map).bindPopup("<b>Forcella</b><br/>Priče o Camorri su stvarne.");
-
-        // Visoki rizik
-        L.circle([40.9095, 14.2320], { color: "red", fillColor: "#f03", fillOpacity: 0.5, radius: 1000 })
-            .addTo(map).bindPopup("<b>Scampia</b><br/>Gomorra uživo, ulaz na vlastitu odgovornost.");
-    </script>
-</body>
-
-</html>
+                <img src="https://imgs.search.brave.com/1fYBg-FXIcwZW7RhEWmjGq6RhK14lT1J0I1FdcINtzI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/ZmFzY2luYXRpbmdz/cGFpbi5jb20vbWVk/aWEvZmFzY2luYXRp/bmdzcGFpbi9pbWFn/ZXMvMjAyMi8wMi8x/
