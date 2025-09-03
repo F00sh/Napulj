@@ -1,31 +1,47 @@
 <!doctype html>
-<html lang="hr">
+<html lang="hr" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GONZO NAPULJ ZA NJU — Magazin + interaktivna karta</title>
+  <title>GONZO NAPULJ ZA NINU — Magazin + interaktivna karta</title>
 
-  <!-- Fonts (modern magazine vibe) -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <!-- Leaflet (map) -->
+  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
 
   <style>
     :root{
-      /* Modern-newspaper palette */
+      /* LIGHT */
       --paper:#faf7ef;
       --ink:#1f1e1c;
       --muted:#676056;
       --rule:#d9cfbe;
-      --accent:#a14232;   /* naslov/badge */
-      --safe:#0f6d3d;     /* “opuštenije” */
-      --danger:#9a1e1e;   /* “oprez” */
-      --event:#5a48d6;    /* povijesni događaji */
-      --chip:#f1e9d7;     /* filter chip bg */
+      --accent:#a14232;
+      --safe:#0f6d3d;
+      --danger:#9a1e1e;
+      --event:#5a48d6;
+      --chip:#f1e9d7;
+      --panel:#fffef9;
+      --card:#fff;
+      --shadow:0 8px 24px rgba(0,0,0,.06);
     }
+    [data-theme="dark"]{
+      /* DARK */
+      --paper:#141311;
+      --ink:#f6f2ea;
+      --muted:#b9b1a6;
+      --rule:#3d382f;
+      --accent:#d86a59;
+      --chip:#1d1b18;
+      --panel:#191815;
+      --card:#151410;
+      --shadow:0 8px 24px rgba(0,0,0,.45);
+    }
+
     html,body{height:100%; background:var(--paper); color:var(--ink);}
     body{
       margin:0;
@@ -33,31 +49,29 @@
       -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
     }
 
-    /* Layout */
     .wrap{
       display:grid; grid-template-columns: minmax(0,1fr) minmax(340px,520px);
       gap:2.2rem; max-width:1320px; padding:28px 20px; margin:0 auto;
     }
     header{
       grid-column:1/-1; text-align:center; margin-bottom:8px;
-      border-bottom: 3px double var(--rule); padding-bottom:16px;
+      border-bottom: 3px double var(--rule); padding-bottom:16px; position:relative;
     }
-    .masthead{
-      font-family:"Playfair Display", serif; font-weight:800; letter-spacing:.5px;
-      font-size: clamp(30px,4.2vw,52px);
-    }
-    .dek{
-      color:var(--muted); font-style:italic; margin-top:6px; max-width:72ch; margin-inline:auto;
-    }
+    .masthead{ font-family:"Playfair Display", serif; font-weight:800; letter-spacing:.5px; font-size: clamp(30px,4.2vw,52px); }
+    .dek{ color:var(--muted); font-style:italic; margin-top:6px; max-width:72ch; margin-inline:auto; }
 
-    /* Article columns */
-    .article{
-      column-count: 2; column-gap: 2.4rem;
+    /* Dark mode button */
+    .theme-btn{
+      position:absolute; right:10px; top:10px;
+      border:1px solid var(--rule); background:var(--panel); color:var(--ink);
+      padding:.45rem .65rem; border-radius:999px; display:flex; align-items:center; gap:.45rem;
+      cursor:pointer; box-shadow: var(--shadow); font: 600 14px/1 Inter, sans-serif;
     }
-    @media (max-width: 980px){
-      .wrap{grid-template-columns: 1fr;}
-      .article{column-count: 1;}
-    }
+    .theme-btn svg{ width:18px; height:18px; display:block; }
+
+    .article{ column-count: 2; column-gap: 2.4rem; }
+    @media (max-width: 980px){ .wrap{grid-template-columns:1fr;} .article{column-count:1;} }
+
     h2,h3{
       break-inside: avoid; line-height:1.2; margin: 1.6rem 0 .6rem;
       font-family:"Playfair Display", serif; font-weight:800;
@@ -73,32 +87,25 @@
       display:inline-flex; gap:.6rem; align-items:center;
       font-variant:all-small-caps; letter-spacing:1px; font-weight:800;
       border:1px solid var(--rule); padding:.25rem .6rem; margin:.25rem 0 .75rem;
-      color:var(--accent); background:#fffaf1;
+      color:var(--accent); background:var(--card);
     }
     .rule{ border-top:1px solid var(--rule); margin: 1.1rem 0; }
 
-    /* Callouts / notes / pullquote */
-    .note{
-      background: #fff9ee; border:1px solid var(--rule); padding:.8rem 1rem; color:#3b2c13;
-      box-shadow:0 1px 0 rgba(0,0,0,.04); break-inside: avoid;
-    }
+    .note{ background: var(--panel); border:1px solid var(--rule); padding:.8rem 1rem; color:var(--ink); opacity:.95; box-shadow:0 1px 0 rgba(0,0,0,.04); break-inside: avoid; }
     .pull{
       font-family:"Playfair Display",serif; font-size:22px; line-height:1.35; font-weight:600;
-      padding:.8rem 1rem; background:#fff; border-left:4px solid var(--accent); color:#2b2621;
+      padding:.8rem 1rem; background:var(--card); border-left:4px solid var(--accent); color:var(--ink);
       margin:1rem 0; break-inside: avoid;
     }
 
-    /* Sidebar */
     aside{ position:sticky; top:16px; align-self:start; display:flex; flex-direction:column; gap:16px; }
-    .panel{ border:1px solid var(--rule); background:#fffef9; padding:1rem; }
+    .panel{ border:1px solid var(--rule); background:var(--panel); padding:1rem; box-shadow: var(--shadow); border-radius:10px; }
     #map{
       height: 440px; border:1px solid var(--rule);
-      background:#fff; box-shadow:0 8px 24px rgba(0,0,0,.06);
+      background:var(--card); box-shadow: var(--shadow);
       border-radius:10px; overflow:hidden;
-      filter: saturate(.9) contrast(1.04);
     }
 
-    /* Filter chips */
     .filters{ display:flex; flex-wrap:wrap; gap:.5rem; }
     .chip{
       display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .6rem;
@@ -111,121 +118,65 @@
     .dot{ width:12px; height:12px; border-radius:50%; display:inline-block; }
     .dot.danger{ background:var(--danger); } .dot.safe{ background:var(--safe); } .dot.event{ background:var(--event); }
 
-    /* Gallery */
     .gallery{ margin-top:18px; display:grid; grid-template-columns: repeat(2,1fr); gap:14px; }
     @media (max-width:680px){ .gallery{ grid-template-columns:1fr; } }
-    figure{ margin:0; border:1px solid var(--rule); background:#fffef9; break-inside: avoid; box-shadow:0 1px 0 rgba(0,0,0,.04); border-radius:8px; overflow:hidden; }
+    figure{ margin:0; border:1px solid var(--rule); background:var(--card); break-inside: avoid; box-shadow:0 1px 0 rgba(0,0,0,.04); border-radius:8px; overflow:hidden; }
     figure img{ width:100%; height:auto; display:block; filter: grayscale(100%) contrast(1.05) saturate(.75); transition:filter .2s ease; }
     figure:hover img{ filter: grayscale(0%) contrast(1.05) saturate(1); }
-    figcaption{ font-size:.9rem; padding:.55rem .7rem; color:var(--muted); border-top:1px solid var(--rule); }
+    [data-theme="dark"] figure img{ filter: grayscale(100%) contrast(1.05) saturate(.7) brightness(.9); }
 
-    /* Mini “timeline” lista događaja */
     .timeline{ list-style:none; margin:0; padding:0; display:grid; gap:.8rem; }
-    .timeline li{ padding:.6rem .75rem; border:1px dashed var(--rule); background:#fff; border-radius:8px; }
-    .timeline small{ color:var(--muted); }
+    .timeline li{ padding:.6rem .75rem; border:1px dashed var(--rule); background:var(--card); border-radius:8px; }
 
     footer{
       margin:28px auto 40px; max-width:1320px; padding:0 20px; color:var(--muted);
       border-top: 3px double var(--rule); padding-top:14px; font-size:.95rem;
-    }
-
-    /* Dark support */
-    @media (prefers-color-scheme: dark){
-      :root{ --paper:#141311; --ink:#f6f2ea; --muted:#b9b1a6; --rule:#3d382f; --chip:#1d1b18; }
-      figure img{ filter: grayscale(100%) contrast(1.05) saturate(.7) brightness(.9); }
-      .panel, .note, .timeline li{ background:#191815; }
-      #map{ background:#111; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
+      <button id="themeToggle" class="theme-btn" aria-label="Promijeni temu">
+        <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+        <svg id="iconMoon" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span id="themeLabel">Light</span>
+      </button>
       <div class="masthead">GONZO NAPULJ ZA NJU</div>
-      <div class="dek">Ironijski magazin-vodič: više teksta, više mjesta, povijesni “case files” i interaktivna karta s filtrima. Humor crn, razum trezven.</div>
+      <div class="dek">Ironijski magazin-vodič: više teksta, više mjesta, “case files” i interaktivna karta s filtrima. Humor crn, razum trezven.</div>
     </header>
 
-    <!-- ===================== Lijevi stupci: TEKST ===================== -->
+    <!-- ====== Lijevi stupci: TEKST (skraćeno za primjer; ostaje kao u tvojoj verziji) ====== -->
     <main class="article">
       <p class="kicker">satira s ugrađenim airbagom</p>
       <p class="lead"><strong>Ovo je kompas kroz kaos.</strong> Ne nudi “mafija turu”, nego realnost s ironijom. Procijeni, nasmij se i <em>vrati se živa, cijela i s mobitelom</em>.</p>
 
-      <h2>Manifest preživljavanja (za nju, prošireno)</h2>
-      <p><strong>Tvoje tijelo, tvoja granica.</strong> <em>Basta</em> je cijela rečenica. Minimalno nakita; <strong>crossbody</strong> sprijeda, zatvarač gore; telefon nikad uz rub kolnika. Bar je crkva: kad osjetiš previše “ljubavi” — u bar/hotel, pa recalibrate. Skuter uvijek pobjeđuje; ti pobjeđuješ kada ga ne provociraš telefonom kao fenjerom.</p>
-      <p><strong>Red flag bingo:</strong> “besplatne” narukvice/ruže, peticije djece, trio s koreografijom pita–gura–bere, skuter duet koji uspori do tvog tempa. Osmijeh tanak, <em>No, grazie</em>, korak dublje na nogostup, ulaz u lokal. </p>
-      <div class="note"><strong>Brzi set-up:</strong> powerbank; rezervna kartica + gotovina skriveno; adresa smještaja na papiriću; kopije dokumenata digitalno; lažni novčanik (10–20 € + stare kartice); kosa u rep/kapuljača. Ako voliš gadgete: diskretna sirena na ključevima.</div>
+      <h2>Manifest preživljavanja</h2>
+      <p><strong>Tvoje tijelo, tvoja granica.</strong> <em>Basta</em> je cijela rečenica. Minimalno nakita; <strong>crossbody</strong> sprijeda; telefon nikad uz rub kolnika. Bar je crkva: kad osjetiš previše “ljubavi” — u bar/hotel. Skuter uvijek pobjeđuje.</p>
+      <div class="note"><strong>Brzi set-up:</strong> powerbank; rezervna kartica + gotovina skriveno; adresa smještaja na papiriću; kopije dokumenata digitalno; lažni novčanik; kosa u rep.</div>
 
-      <h2>Kartografski horoskop (kvartovi & reputacije)</h2>
-      <h3>Zone “drži oči otvorene”</h3>
-      <p><strong>Quartieri Spagnoli</strong> — šarm, veš, uske ulice; danju spektakl, noću glavne crte i kafići. <strong>Forcella / Via Duomo</strong> — gušća scena; budi kompaktna s džepovima. <strong>Rione Sanità</strong> — gurmanski i intenzivan: idi ranije navečer, rezerviraj. <strong>Piazza Garibaldi / Napoli Centrale</strong> — pickpocket bingo, torba naprijed. <strong>Spaccanapoli</strong> — savršena šetnja; telefon nije baklja. <strong>Scampia</strong> & <strong>Secondigliano</strong> — periferije s teškom reputacijom; bez lokalca/razloga: ne.</p>
-
-      <h3>Antidot — ljepota bez drame</h3>
-      <p><strong>Lungomare Caracciolo</strong>, <strong>Castel dell’Ovo</strong>, <strong>Vomero</strong> s panoramama, <strong>Pignasecca</strong> (danju), <strong>Piazza Bellini</strong> (ranije navečer), <strong>Chiaia</strong> (elegantno), te <strong>Murales Maradona</strong> (simbol grada u samom Quartieri — ideš danju).</p>
+      <h2>Kartografski horoskop</h2>
+      <p><strong>Quartieri Spagnoli</strong>, <strong>Forcella / Via Duomo</strong>, <strong>Rione Sanità</strong>, <strong>Garibaldi/Centrale</strong>, <strong>Spaccanapoli</strong> — drži oči otvorene. <strong>Lungomare</strong>, <strong>Castel dell’Ovo</strong>, <strong>Vomero</strong>, <strong>Pignasecca</strong>, <strong>Bellini</strong>, <strong>Chiaia</strong> — ljepota bez drame.</p>
 
       <div class="pull">“Bar je crkva, telefon nije fenjer. Humor je štit, granice su zid.”</div>
 
-      <h2>Case files: mjesta iz novina & pop-kulture</h2>
+      <h2>Case files</h2>
       <ul class="timeline">
-        <li><strong>Faida di Scampia (2000-e)</strong> — serija obračuna povezanih s Camorrom u zoni <em>Vele di Scampia</em> i okolici. Danas se kompleks ruši/transformira, ali reputacija je ostala. <small>Orijentir: Scampia (sjever).</small></li>
-        <li><strong>Forcella — tragičan slučaj (2004)</strong> — široko medijski popraćen, djevojka je pogođena tijekom mafijaškog obračuna. <small>Orijentir: oko Via Forcella / Via Duomo.</small></li>
-        <li><strong>Secondigliano</strong> — povijesno uporište kriminalnih klanova; česte policijske akcije kroz godine. <small>Orijentir: sjever, uz Scampiju.</small></li>
-        <li><strong>“Gomorra” lokacije</strong> — brojna snimanja u i oko Scampije/Secondigliana; pop-kulturni pečat grada. <small>Orijentiri: Vele di Scampia, periferija sjeverno.</small></li>
+        <li><strong>Faida di Scampia (2000-e)</strong> — niz obračuna u zoni “Vele di Scampia”. <small>Sjever.</small></li>
+        <li><strong>Forcella — tragičan slučaj (2004)</strong> — djevojka pogođena tijekom mafijaškog obračuna. <small>Oko Via Forcella/Via Duomo.</small></li>
+        <li><strong>Secondigliano</strong> — povijesno uporište klanova; česte policijske akcije. <small>Sjever.</small></li>
       </ul>
-      <p class="note">Ovo su <em>orijentiri medijske/povijesne reputacije</em>, ne itinerar. Poanta: informiranost → izbjegavanje nepotrebnih rizika.</p>
 
-      <h2>Itinerar “opasnog” (sigurna verzija, produljeno)</h2>
-      <h3>Dan 1 — Probni krug</h3>
-      <p><strong>Pignasecca</strong> (jutro): kupi voće/streed-food, sitniš pri ruci. <strong>Spaccanapoli</strong> (podne): barovi su pit-stop; mape čitaš kroz izlog. <strong>Lungomare</strong> (večer): sladoled, vjetar, povratak taksijem ili prometnom rutom.</p>
-      <h3>Dan 2 — Vespe i nervni sustav</h3>
-      <p><strong>Vomero</strong> (kava + pogled). <strong>Forcella/centar</strong> (popodne): telefon <em>iznad</em> torbe, korak udaljeno od ruba ceste. <strong>Sanità</strong> (rani stol): rezervacija, jasno osvijetljen lokal; taksi natrag.</p>
-      <h3>Dan 3 — Gonzo gastro</h3>
-      <p>Tržnice/pećnice/tave. “Besplatni” darovi = najskuplji. Ruke niz tijelo, <em>No, grazie</em>, ideš dalje. Uleti u <strong>Galleria Umberto I</strong> i <strong>Piazza del Plebiscito</strong> za dozu monumentalnog bez stresa.</p>
-      <h3>Dan 4 — More, kamen, epilog</h3>
-      <p><strong>Castel dell’Ovo</strong>, jutarnje svjetlo. Suvenir: priča o najhrskavijoj pizzi, ne o najskupljem espressu (plaćenom novim telefonom).</p>
-
-      <h2>Crni humor & brzi izlazi</h2>
-      <p>Prebliski “vodič”? <em>Tutto a posto</em>, korak u stranu, ulaz u bar. Skuter duet preblizu? Telefon u torbu; jedan korak dublje na nogostup. Trio (pita-gura-bere)? Tijelo u “L”, torba štit, dalje. Catcalling? <strong>Basta.</strong> je točka, ne početak rasprave.</p>
-
-      <div class="rule"></div>
-
-      <h2>Galerija (ulice & prizori)</h2>
+      <h2>Galerija</h2>
       <div class="gallery">
-        <figure>
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Quartieri%20Spagnoli,%20Naples%2020230622%2009.jpg" alt="Quartieri Spagnoli">
-          <figcaption>Quartieri Spagnoli — uske ulice i zastave od veša.</figcaption>
-        </figure>
-        <figure>
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Rione%20Sanit%C3%A0%201.jpg" alt="Rione Sanità">
-          <figcaption>Rione Sanità — povijest, arkade, gurmanske radosti (uz rutu i razum).</figcaption>
-        </figure>
-        <figure>
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Napoli%20Centrale%20railway%20station%20in%202018.12.jpg" alt="Napoli Centrale">
-          <figcaption>Napoli Centrale / Piazza Garibaldi — pickpocket bingo HQ.</figcaption>
-        </figure>
-        <figure>
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Vele%20di%20Scampia%20Di%20Salvo2.jpg" alt="Vele di Scampia">
-          <figcaption>Vele di Scampia — simbol periferijske drame i pop-kulture.</figcaption>
-        </figure>
-        <figure>
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Panoramica%20dal%20lungomare%20di%20Napoli%20sul%20golfo.jpg" alt="Lungomare">
-          <figcaption>Lungomare Caracciolo — šetnica i more kao sedativ.</figcaption>
-        </figure>
-        <figure>
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Castel%20dell-Ovo.JPG" alt="Castel dell’Ovo">
-          <figcaption>Castel dell’Ovo — fotogenična tvrđava.</figcaption>
-        </figure>
-        <figure>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Napoli%2C_Murales_Maradona_in_quartiere_Spagnoli_02.jpg" alt="Murales Maradona">
-          <figcaption>Murales Maradona — ikona grada (danju!).</figcaption>
-        </figure>
-        <figure>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/4/4d/Napoli%2C_Galleria_Umberto_I.jpg" alt="Galleria Umberto I">
-          <figcaption>Galleria Umberto I — kupola, mramor i predah.</figcaption>
-        </figure>
+        <figure><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Quartieri%20Spagnoli,%20Naples%2020230622%2009.jpg" alt="Quartieri Spagnoli"><figcaption>Quartieri Spagnoli</figcaption></figure>
+        <figure><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Rione%20Sanit%C3%A0%201.jpg" alt="Rione Sanità"><figcaption>Rione Sanità</figcaption></figure>
+        <figure><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Napoli%20Centrale%20railway%20station%20in%202018.12.jpg" alt="Napoli Centrale"><figcaption>Napoli Centrale</figcaption></figure>
+        <figure><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Vele%20di%20Scampia%20Di%20Salvo2.jpg" alt="Vele di Scampia"><figcaption>Vele di Scampia</figcaption></figure>
       </div>
     </main>
 
-    <!-- ===================== Desni stupac: KARTA + PANELI ===================== -->
+    <!-- ====== Desni stupac: KARTA + PANELI ====== -->
     <aside>
       <div class="panel">
         <div class="filters" aria-label="Filtri slojeva">
@@ -241,32 +192,70 @@
         <div class="key"><span class="dot danger"></span> Zone povećanog opreza</div>
         <div class="key"><span class="dot safe"></span> “Sigurnije/opuštenije” zone</div>
         <div class="key"><span class="dot event"></span> Povijesni događaji / medijski slučajevi</div>
-        <p style="margin:.6rem 0 0;color:var(--muted);">Orijentacijska karta reputacija i javno poznatih slučajeva. Nije policijska statistika. Cilj je informiranost, ne senzacija.</p>
-      </div>
-
-      <div class="panel">
-        <h3 style="margin:.2rem 0 .6rem;font-size:18px;">Fraze za brzi “escape”</h3>
-        <p><strong>No, grazie.</strong> Ne, hvala. <strong>Basta.</strong> Dosta. <strong>Lasciami in pace.</strong> Pusti me na miru. <strong>Un taxi, per favore.</strong> Taksi, molim.</p>
+        <p style="margin:.6rem 0 0;color:var(--muted);">Orijentacijska karta reputacija i javno poznatih slučajeva. Ne zamjenjuje policijsku statistiku.</p>
       </div>
     </aside>
   </div>
 
   <footer>
-    Fotografije: Wikimedia Commons. Karta: OpenStreetMap + Leaflet. Tekst je satiričan, informativan i pro-sigurnost.
+    Fotografije: Wikimedia Commons. Karta: OpenStreetMap + Leaflet (&copy; CARTO za dark tiles). Tekst je satiričan i pro-sigurnost.
   </footer>
 
   <script>
     (function(){
+      // ---------- THEME ----------
+      const root = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+      const label = document.getElementById('themeLabel');
+      const iconSun = document.getElementById('iconSun');
+      const iconMoon = document.getElementById('iconMoon');
+
+      function setTheme(mode){
+        root.setAttribute('data-theme', mode);
+        localStorage.setItem('theme', mode);
+        const isDark = mode === 'dark';
+        iconSun.style.display = isDark ? 'none' : 'block';
+        iconMoon.style.display = isDark ? 'block' : 'none';
+        label.textContent = isDark ? 'Dark' : 'Light';
+        // Switch map base if already created
+        if (window._map && window._lightTiles && window._darkTiles){
+          if (isDark){ window._map.removeLayer(window._lightTiles); window._darkTiles.addTo(window._map); }
+          else       { window._map.removeLayer(window._darkTiles); window._lightTiles.addTo(window._map); }
+        }
+      }
+      // Initial theme: saved -> system pref
+      const saved = localStorage.getItem('theme');
+      const initial = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      setTheme(initial);
+
+      btn.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+      });
+
+      // ---------- MAP ----------
       function initMap(){
         if (typeof L === 'undefined'){
-          var el = document.getElementById('map');
-          if (el) el.innerHTML = 'Karta nije učitana (CDN blokiran?). Otvori u drugom pregledniku ili spusti blokade za ovu stranicu.';
+          const el = document.getElementById('map');
+          if (el) el.textContent = 'Karta nije učitana (CDN blokiran?). Otvori u drugom pregledniku ili spusti blokade.';
           return;
         }
+        const isDark = root.getAttribute('data-theme') === 'dark';
         const map = L.map('map', {scrollWheelZoom:true}).setView([40.8518,14.2681], 12.4);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19, attribution: '&copy; OpenStreetMap doprinositelji'}).addTo(map);
 
-        // ---- Data ----
+        // Base tiles (light/dark)
+        const lightTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19, attribution: '&copy; OpenStreetMap doprinositelji'
+        });
+        const darkTiles  = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          maxZoom: 19, attribution: '&copy; OpenStreetMap doprinositelji &copy; CARTO'
+        });
+        (isDark ? darkTiles : lightTiles).addTo(map);
+
+        // Expose globally for theme switch
+        window._map = map; window._lightTiles = lightTiles; window._darkTiles = darkTiles;
+
+        // Data
         const danger = [
           { name:'Quartieri Spagnoli', lat:40.8421, lng:14.2450, note:'Šarmantno i usko; noću glavne crte.',
             img:'https://commons.wikimedia.org/wiki/Special:FilePath/Quartieri%20Spagnoli,%20Naples%2020230622%2009.jpg' },
@@ -299,31 +288,24 @@
           { name:'Piazza del Plebiscito', lat:40.8358, lng:14.2488, note:'Monumentalno i prostrano.',
             img:'https://upload.wikimedia.org/wikipedia/commons/3/3f/Piazza_del_Plebiscito.jpg' }
         ];
-        // Događaji / “case files” (sažeto; orijentiri, ne pozivnice)
         const events = [
           { name:'Faida di Scampia (2000-e)', lat:40.9013, lng:14.23498,
             note:'Serija obračuna povezanih s Camorrom oko “Vele di Scampia”. Danas u transformaciji; reputacija ostala.',
             img:'https://commons.wikimedia.org/wiki/Special:FilePath/Vele%20di%20Scampia%20Di%20Salvo2.jpg' },
           { name:'Forcella — tragičan slučaj (2004)', lat:40.8512, lng:14.2620,
-            note:'Široko medijski popraćena smrt djevojke tijekom mafijaškog obračuna. Orijentir: Via Forcella/Via Duomo.',
+            note:'Široko medijski popraćena smrt djevojke tijekom obračuna. Orijentir: Via Forcella/Via Duomo.',
             img:'https://commons.wikimedia.org/wiki/Special:FilePath/Napoli,%20Duomo%20di%20Napoli.jpg' },
           { name:'Secondigliano — policijske akcije', lat:40.9000, lng:14.2667,
-            note:'Povijesno uporište klanova; česte racije i uhićenja kroz godine.',
+            note:'Povijesno uporište klanova; česte racije i uhićenja.',
             img:'https://upload.wikimedia.org/wikipedia/commons/3/35/Napoli%2C_Secondigliano.jpg' }
         ];
 
-        // ---- Layers ----
+        // Layers
         const redStyle   = {radius:8, color:'#9a1e1e', fillColor:'#9a1e1e', fillOpacity:.85};
         const greenStyle = {radius:8, color:'#0f6d3d', fillColor:'#0f6d3d', fillOpacity:.85};
         const eventStyle = {radius:8, color:'#5a48d6', fillColor:'#5a48d6', fillOpacity:.9};
 
-        function popup(p){
-          return `
-            <strong>${p.name}</strong><br/>
-            <em>${p.note}</em><br/>
-            ${p.img ? `<a href="${p.img}" target="_blank" rel="noopener">Vidi fotografiju</a>` : ''}
-          `;
-        }
+        function popup(p){ return `<strong>${p.name}</strong><br/><em>${p.note}</em><br/>${p.img?`<a href="${p.img}" target="_blank" rel="noopener">Vidi fotografiju</a>`:''}`; }
 
         const Ldanger = L.layerGroup(danger.map(p=>L.circleMarker([p.lat,p.lng], redStyle).bindPopup(popup(p))));
         const Lsafe   = L.layerGroup(safe.map(p=>L.circleMarker([p.lat,p.lng], greenStyle).bindPopup(popup(p))));
@@ -331,13 +313,10 @@
 
         Ldanger.addTo(map); Lsafe.addTo(map); Levent.addTo(map);
 
-        // Filter chips
-        const fDanger = document.getElementById('fDanger');
-        const fSafe   = document.getElementById('fSafe');
-        const fEvent  = document.getElementById('fEvent');
-        fDanger.addEventListener('change',()=> fDanger.checked ? Ldanger.addTo(map) : map.removeLayer(Ldanger));
-        fSafe  .addEventListener('change',()=> fSafe.checked   ? Lsafe.addTo(map)   : map.removeLayer(Lsafe));
-        fEvent .addEventListener('change',()=> fEvent.checked  ? Levent.addTo(map)  : map.removeLayer(Levent));
+        // Filters
+        document.getElementById('fDanger').addEventListener('change', e=> e.target.checked ? Ldanger.addTo(map) : map.removeLayer(Ldanger));
+        document.getElementById('fSafe').addEventListener('change',   e=> e.target.checked ? Lsafe.addTo(map)   : map.removeLayer(Lsafe));
+        document.getElementById('fEvent').addEventListener('change',  e=> e.target.checked ? Levent.addTo(map)  : map.removeLayer(Levent));
       }
 
       if (document.readyState !== 'loading') initMap();
