@@ -13,58 +13,90 @@
 
     <style>
         body {
-            font-family: "Georgia", serif;
+            font-family: "Trebuchet MS", sans-serif;
             background-color: #0d1117;
             color: #e6e6e6;
             line-height: 1.7;
             margin: 0;
-            padding: 0;
         }
 
         header {
-            background: #161b22;
+            background: linear-gradient(135deg, #161b22, #1f2937);
             padding: 2rem;
             text-align: center;
             border-bottom: 3px solid crimson;
         }
 
         header h1 {
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             margin: 0;
-            color: crimson;
+            color: #ff4c4c;
+            text-shadow: 2px 2px 4px #000;
         }
 
         main {
-            max-width: 900px;
+            max-width: 1000px;
             margin: auto;
             padding: 2rem;
         }
 
         h2 {
-            color: #ff6347;
+            color: #ff7043;
             margin-top: 2rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 0.3rem;
         }
 
         .day {
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px dashed #444;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: #161b22;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
         }
 
         .spot img {
             width: 100%;
-            max-height: 320px;
+            max-height: 300px;
             object-fit: cover;
             border-radius: 10px;
-            margin: 0.5rem 0;
-            display: block;
+            margin: 0.5rem 0 1rem 0;
+        }
+
+        .places {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            margin-top: 1rem;
+        }
+
+        .card {
+            background: #1f2937;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #ffb347;
+        }
+
+        .card a {
+            color: #61dafb;
+            text-decoration: none;
         }
 
         #map {
-            height: 400px;
+            height: 450px;
             border: 2px solid crimson;
             margin-top: 1rem;
-            border-radius: 10px;
+            border-radius: 12px;
         }
 
         footer {
@@ -72,11 +104,9 @@
             padding: 2rem;
             border-top: 2px solid crimson;
             font-size: 0.9rem;
-            color: #999;
-        }
-
-        a {
-            color: #ff6347;
+            color: #aaa;
+            margin-top: 2rem;
+            background: #161b22;
         }
     </style>
 </head>
@@ -84,84 +114,107 @@
 <body>
     <header>
         <h1>Napulj u 3 dana – vodič za hrabre turiste</h1>
-        <h2>ne daj se Nina!</h2>
     </header>
 
     <main>
-        <p>Napulj je grad u kojem je pizza nastala, a mobitel nestao. Ovdje se povijest, umjetnost i kriminal isprepliću
-            kao špageti u prevelikom loncu. Ako očekujete firentinske muzeje i šetnje bez stresa – krivo ste skrenuli.
-            Ako pak želite osjetiti puls grada koji je jednako lijep i opasan, dobrodošli. Evo 3-dnevni plan kako
-            preživjeti.</p>
+        <p>Napulj – grad gdje pizza košta manje od piva, gdje Camorra ima bolji PR od turističke zajednice i gdje ćete
+            naučiti trčati brže nego Usain Bolt… barem kad vas krene pratiti Vespa bez registarskih oznaka. Ovo je vaš
+            vodič kroz 3 dana pakleno-zabavnog turizma.</p>
 
+        <!-- Dan 1 -->
         <div class="day">
             <h2>Dan 1 – “Sigurni” početak</h2>
             <div class="spot">
                 <img src="https://imgs.search.brave.com/oimMCTpXOleCGQ3houwC4qZX84GGmf6PyrAz8Fh3-Cw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS1jZG4udHJpcGFk/dmlzb3IuY29tL21l/ZGlhL3Bob3RvLW8v/MTgvMjAvYzcvN2Iv/cGlhenphLWRlbC1w/bGViaXNjaXRvLmpw/Zw"
                     alt="Piazza del Plebiscito">
-                <p><b>Piazza del Plebiscito</b> – ovdje su se održavali vojni mimohodi, papinski govori i mafijaški
-                    dogovori u kafićima. Ogroman prostor znači i puno prostora za džepare, ali barem imate gdje trčati.
-                    Savjet: izgledajte siromašno, turisti s Louis Vuitton torbicama ovdje su kao signalni rakete.</p>
+                <p><b>Piazza del Plebiscito</b> – povijesni trg, politički skupovi, mafijaški susreti i selfie na sve
+                    to. Ako preživite gužvu – čeka vas najbolja pizza u životu.</p>
             </div>
             <div class="spot">
                 <img src="https://imgs.search.brave.com/d0Bz53v96XVVzGoXlfU5RMl7RPNRzOKJkMuGgxwkCB4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS1jZG4udHJpcGFk/dmlzb3IuY29tL21l/ZGlhL3Bob3RvLW8v/MDYvYzUvN2UvMzEv/Y2FzdGVsbC1kZWxs/LW92by5qcGc"
                     alt="Castel dell'Ovo">
-                <p><b>Castel dell’Ovo</b> – najstarija tvrđava u Napulju, ime duguje legendi o jajetu koje navodno drži
-                    grad na životu. Mafija se time nije opterećivala, njima je bilo dovoljno da drže grad u šaci. Danas
-                    je to mirna zona za turiste – što znači da će vam ukrasti novac kroz cijenu espressa, a ne kroz
-                    pištolj.</p>
+                <p><b>Castel dell’Ovo</b> – tvrđava s legendarnim jajetom. Mafija je grad već polako ispraznila pa jaje
+                    ne mora.</p>
             </div>
-            <p><i>Ponašanje:</i> Ovdje glumite klasičnog turista – fotoaparat, šešir, selfie s pizzom. Policije ima, pa
-                su šanse da ostanete bez mobitela niže. Ali pazite: i policajci vole turiste – kao publiku, ne kao
-                zaštitu.</p>
+
+            <h3>Restorani i barovi za prvi dan</h3>
+            <div class="places">
+                <div class="card">
+                    <h3><a href="https://goo.gl/maps/6g4kWzEBy2x3YbA67" target="_blank">Pizzeria Brandi</a></h3>
+                    <p>Mjesto rođenja pizze Margherita. Ako čekate dulje od 40 minuta – to je samo dio iskustva.</p>
+                </div>
+                <div class="card">
+                    <h3><a href="https://goo.gl/maps/4QWz5v8ZzKGrQMTY7" target="_blank">Gran Caffè Gambrinus</a></h3>
+                    <p>Kultna kavana na trgu, skupa kava i besplatan pogled na povijest – i na džeparoše.</p>
+                </div>
+            </div>
         </div>
 
+        <!-- Dan 2 -->
         <div class="day">
             <h2>Dan 2 – Prava doza adrenalina</h2>
             <div class="spot">
                 <img src="https://imgs.search.brave.com/1fYBg-FXIcwZW7RhEWmjGq6RhK14lT1J0I1FdcINtzI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/ZmFzY2luYXRpbmdz/cGFpbi5jb20vbWVk/aWEvZmFzY2luYXRp/bmdzcGFpbi9pbWFn/ZXMvMjAyMi8wMi8x/Ni8yMDIyMDIxNjEw/MDMwMjI5ODk2OC5q/cGc"
                     alt="Quartieri Spagnoli">
-                <p><b>Quartieri Spagnoli</b> – nekad vojarna španjolske vojske iz 16. stoljeća, danas labirint kriminala
-                    i šarma. Ovdje su se rađale mafijaške legende, a lokalni klinci na skuterima imaju reputaciju kao
-                    Formula 1 vozači – osim što oni ne jure za pobjedom, nego za vašim mobitelom.</p>
+                <p><b>Quartieri Spagnoli</b> – španjolske barake iz 16. st. pretvorene u mafijaški Disneyland. Vespe,
+                    grafiti i pogled koji vas skenira bolje od rendgena.</p>
             </div>
             <div class="spot">
                 <img src="https://imgs.search.brave.com/PiwqtWnEUQIM37J4GpOiT3KOOJ_Qg4gEfBNftlgxklM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS1jZG4udHJpcGFk/dmlzb3IuY29tL21l/ZGlhL3Bob3RvLW8v/MTUvZjIvNmMvMTMv/aW1nLTIwMTgxMTA3/LTEzMDEwOC1sYXJn/ZWpwZy5qcGc"
                     alt="Forcella">
-                <p><b>Forcella</b> – ovdje je sjedište Camorre još od 19. stoljeća. Kad hodate ulicama, znajte da ste
-                    statist u kriminalnom teatru. Prošlost je puna priča o krvavim obračunima, a sadašnjost o “tihim
-                    dogovorima”. Najbolja taktika: hodajte kao da kasnite, jer u Napulju onaj koji zastane – postane
-                    meta.</p>
+                <p><b>Forcella</b> – srce Camorre. Tko je preživio ovdje, kasnije piše knjige. Tko nije – inspiracija je
+                    za Netflix seriju.</p>
             </div>
-            <p><i>Ponašanje:</i> Držite torbu ispred sebe, mobitel u džepu koji se zatvara, a osmijeh kod kuće. Turisti
-                koji izgledaju previše sretno privlače pažnju – jer izgledate kao netko tko još ima sve svoje stvari.
-            </p>
+
+            <h3>Restorani i klubovi za drugi dan</h3>
+            <div class="places">
+                <div class="card">
+                    <h3><a href="https://goo.gl/maps/q8HPqfF37i9cQoF99" target="_blank">Pizzeria Sorbillo</a></h3>
+                    <p>Najpoznatija pizzeria u Napulju. Ako vam netko ukrade mjesto u redu – vjerojatno radi za Camorru.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3><a href="https://goo.gl/maps/ULwUQPY3Wbqzv8Tg7" target="_blank">Piazza Bellini Barovi</a></h3>
+                    <p>Studentska zona puna barova. Sigurnija – osim ako vas ubije cijena craft piva.</p>
+                </div>
+                <div class="card">
+                    <h3><a href="https://goo.gl/maps/kvAK8GyHgD3dK7v59" target="_blank">Club Duel Beat</a></h3>
+                    <p>Underground klub, techno i hip-hop. Ako nestanete do jutra, znat ćemo gdje tražiti.</p>
+                </div>
+            </div>
         </div>
 
+        <!-- Dan 3 -->
         <div class="day">
             <h2>Dan 3 – Ekstremni turizam</h2>
             <div class="spot">
                 <img src="https://imgs.search.brave.com/56RFXAtPzrtmGgwqHGj-85XBKtuGAAhvgh-GURep6uI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMuc3F1YXJlc3Bh/Y2UtY2RuLmNvbS9j/b250ZW50L3YxLzYw/MzA0NDRjMmM4ZTFi/NDU2NDJiNGI0Mi8x/NzMyMzY1MjczMDc0/LTE5UUVQWjZERDlM/VE9HTjdKVlIzL0xl/X1ZlbGVfZGlfU2Nh/bXBpYV8wMDEuanBn"
                     alt="Scampia">
-                <p><b>Scampia</b> – ozloglašeni betonski neboderi “Le Vele” bili su mafijaški bastion krajem 20.
-                    stoljeća. Ovdje se Camorra bavila trgovinom droge u količinama koje bi posramile i Netflix
-                    produkciju. Danas se dio zgrada ruši, ali reputacija ostaje. Ako ste ljubitelj urbexa, ovdje možete
-                    ući u povijest – i možda više nikad izaći.</p>
+                <p><b>Scampia</b> – betonska džungla “Le Vele”. Nekad tržište droge, danas urbex raj. Ako dođete ovdje s
+                    kamerom, doći će netko i uzeti je.</p>
             </div>
             <div class="spot">
                 <img src="https://imgs.search.brave.com/bu5m_e8DNAjpll-69rtWSOkYJpA3xaJPvu0wXW9rCX0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS1jZG4udHJpcGFk/dmlzb3IuY29tL21l/ZGlhL3Bob3RvLW8v/MDUvYmYvMWQvODUv/dmV6dXYuanBn"
                     alt="Vezuv">
-                <p><b>Vezuv</b> – vulkan koji je zatrpao Pompeje. Mafija ga još nije uspjela “preuzeti”, ali ne bi bilo
-                    čudno da netko pokuša naplatiti ulaz na krater. Ako ste na vrhu, uživajte u pogledu – i razmislite
-                    kako je 79. godine izgledalo kad je sve otišlo kvragu. Spoiler: nije bilo Instagrama, pa nitko nije
-                    mogao objaviti story.</p>
+                <p><b>Vezuv</b> – smrtonosna povijest Pompeja. Mafija još nije naplatila ulaz na krater, ali pričekajmo
+                    malo.</p>
             </div>
-            <p><i>Ponašanje:</i> U Scampiji ne vadite fotoaparat, osim ako želite da ga netko “posudi zauvijek”. Na
-                Vezuvu ponesite bocu vode i sunčane naočale, jer zadnje što želite je umrijeti od dehidracije prije nego
-                što vulkan opet proradi.</p>
+
+            <h3>Hrana i noćni život za treći dan</h3>
+            <div class="places">
+                <div class="card">
+                    <h3><a href="https://goo.gl/maps/XRtb1A9iNmbEcJXL8" target="_blank">Trattoria Da Nennella</a></h3>
+                    <p>Kultna trattoria s glasnim konobarima i još glasnijim gostima. Autentično iskustvo Napulja.</p>
+                </div>
+                <div class="card">
+                    <h3><a href="https://goo.gl/maps/JL8uPCYy74ttLURr7" target="_blank">Lanificio 25</a></h3>
+                    <p>Klub u staroj tvornici. Hip-hop, techno, performance art – i pokoji diler u prolazu.</p>
+                </div>
+            </div>
         </div>
 
         <h2>Karta opasnih i sigurnih zona</h2>
-        <p>Legenda: Crveno = visoki rizik, Žuto = oprez, Zeleno = turistički Disneyland (dok vas ne oderu cijenama).</p>
+        <p>Crveno = visoki rizik, Žuto = oprez, Zeleno = turistički Disneyland (dok vas ne oderu cijenama).</p>
         <div id="map"></div>
     </main>
 
