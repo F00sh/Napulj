@@ -1,826 +1,757 @@
-﻿<!doctype html>
-<html lang="hr" data-theme="auto">
+<!doctype html>
+<html lang="hr">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>GONZO NAPULJ ZA NINU — Magazin + interaktivna karta</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Napulj u 4 dana — sigurnosni vodič + karta i itinerar (plavi mediteranski stil)</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Inter:wght@400;600;800&display=swap"
-        rel="stylesheet">
-
-    <!-- Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous">
+    <!-- Leaflet za kartu (vanjski CSS/JS; naš stil je u <style>) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
 
     <style>
+        /* Napulj vodič — mediteranski plavi stil + malo humora */
         :root {
-            /* LIGHT */
-            --paper: #faf7ef;
-            --ink: #1f1e1c;
-            --muted: #676056;
-            --rule: #d9cfbe;
-            --accent: #a14232;
-            --safe: #0f6d3d;
-            --danger: #9a1e1e;
-            --event: #5a48d6;
-            --chip: #f1e9d7;
-            --panel: #fffef9;
-            --card: #fff;
-            --shadow: 0 8px 24px rgba(0, 0, 0, .06);
-            --nav-h: 56px;
+            /* Paleta: tamno Jadransko/ Tirensko plavo, akvamarin, sunčano žuta, pijesak */
+            --bg: #071826;
+            /* duboko noćno more */
+            --card: #0d2333;
+            /* tamni škartoc plave za kartice */
+            --muted: #9fb3c8;
+            /* morska izmaglica */
+            --text: #eaf2f8;
+            /* pjena valova */
+            --brand: #46bdf1;
+            /* jadransko azurno */
+            --ok: #2dd4bf;
+            /* akvamarin (OK) */
+            --caution: #fbbf24;
+            /* sunčano upozorenje */
+            --danger: #ef4444;
+            /* crveno kao zalazak kad malo pretjeraš */
+            --sand: #f2e9d8;
+            /* pijesak */
+            --shadow: 0 8px 30px rgba(0, 0, 0, .35);
+            --radius: 16px;
         }
 
-        [data-theme="dark"] {
-            /* DARK */
-            --paper: #141311;
-            --ink: #f6f2ea;
-            --muted: #b9b1a6;
-            --rule: #3d382f;
-            --accent: #d86a59;
-            --chip: #1d1b18;
-            --panel: #191815;
-            --card: #151410;
-            --shadow: 0 8px 24px rgba(0, 0, 0, .45);
+        * {
+            box-sizing: border-box
         }
 
         html,
         body {
-            height: 100%;
-            background: var(--paper);
-            color: var(--ink);
-            scroll-behavior: smooth;
-        }
-
-        body {
             margin: 0;
-            padding-top: var(--nav-h);
-            font: 17px/1.65 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            padding: 0;
+            background: radial-gradient(1200px 600px at 70% -50%, rgba(70, 189, 241, 0.12), transparent 70%),
+                linear-gradient(180deg, #071826 0%, #0a1e2b 100%);
+            color: var(--text);
+            font: 16px/1.65 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
             -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* ---------- NAVBAR (auto-hide + hamburger) ---------- */
-        .topbar {
-            position: fixed;
-            inset: 0 0 auto 0;
-            height: var(--nav-h);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 8px 14px;
-            background: var(--panel);
-            border-bottom: 1px solid var(--rule);
-            transition: transform .25s ease, background .2s ease;
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block
         }
 
-        .topbar.hide {
-            transform: translateY(-110%);
+        a {
+            color: var(--brand);
+            text-decoration: none
         }
 
-        .brand {
-            font: 800 15px/1 Inter, sans-serif;
-            letter-spacing: .4px;
-            text-decoration: none;
-            color: var(--ink);
-            padding: 6px 10px;
-            border: 1px solid var(--rule);
-            border-radius: 999px;
-            background: var(--card);
+        a:hover {
+            text-decoration: underline
         }
 
-        .links {
-            display: flex;
-            gap: 10px;
-            overflow: auto;
-            white-space: nowrap;
-            scrollbar-width: none;
+        a:focus-visible {
+            outline: 2px solid var(--brand);
+            outline-offset: 2px;
+            border-radius: 6px
         }
 
-        .links::-webkit-scrollbar {
-            display: none;
-        }
-
-        .links a {
-            color: var(--ink);
-            text-decoration: none;
-            padding: 6px 10px;
-            border-radius: 999px;
-            border: 1px solid transparent;
-        }
-
-        .links a:hover {
-            border-color: var(--rule);
-            background: var(--card);
-        }
-
-        .theme-seg {
-            margin-left: auto;
-            display: inline-flex;
-            border: 1px solid var(--rule);
-            border-radius: 999px;
-            overflow: hidden;
-            background: var(--panel);
-        }
-
-        .theme-seg button {
-            border: 0;
-            padding: 6px 10px;
-            background: transparent;
-            color: var(--ink);
-            cursor: pointer;
-            font: 600 13px/1 Inter, sans-serif;
-        }
-
-        .theme-seg button.active {
-            background: var(--card);
-        }
-
-        .nav-btn {
-            border: 1px solid var(--rule);
-            background: var(--card);
-            color: var(--ink);
-            padding: 6px 10px;
-            border-radius: 10px;
-            margin-left: 8px;
-            display: none;
-            cursor: pointer;
-            font: 700 16px/1 Inter, sans-serif;
-        }
-
-        .dropdown {
-            position: fixed;
-            top: var(--nav-h);
-            left: 0;
-            right: 0;
-            z-index: 9998;
-            background: var(--panel);
-            border-bottom: 1px solid var(--rule);
-            display: none;
-        }
-
-        .dropdown.open {
-            display: block;
-        }
-
-        .dropdown .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            padding: 10px 14px;
-        }
-
-        .dropdown a {
-            color: var(--ink);
-            text-decoration: none;
-            padding: 8px 10px;
-            border-radius: 8px;
-        }
-
-        .dropdown a:hover {
-            background: var(--card);
-        }
-
-        /* Responsive */
-        @media (max-width: 860px) {
-            .links {
-                display: none;
-            }
-
-            .nav-btn {
-                display: inline-block;
-            }
-        }
-
-        /* ---------- LAYOUT ---------- */
         .wrap {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(340px, 520px);
-            gap: 2.2rem;
-            max-width: 1320px;
-            padding: 28px 20px;
+            max-width: 1100px;
             margin: 0 auto;
+            padding: 28px 18px 60px
         }
 
         header {
-            grid-column: 1/-1;
-            text-align: center;
-            margin-bottom: 8px;
-            border-bottom: 3px double var(--rule);
-            padding-bottom: 16px;
-            position: relative;
+            display: grid;
+            gap: 10px;
+            margin-bottom: 22px;
+            position: relative
         }
 
-        .masthead {
-            font-family: "Playfair Display", serif;
-            font-weight: 800;
-            letter-spacing: .5px;
-            font-size: clamp(30px, 4.2vw, 52px);
+        .banner {
+            position: absolute;
+            inset: -24px -18px auto -18px;
+            height: 120px;
+            z-index: -1;
+            background: linear-gradient(135deg, rgba(70, 189, 241, .18) 0%, rgba(45, 212, 191, .10) 60%, transparent 100%);
+            filter: blur(16px);
         }
 
-        .dek {
-            color: var(--muted);
-            font-style: italic;
-            margin-top: 6px;
-            max-width: 72ch;
-            margin-inline: auto;
-        }
-
-        .article {
-            column-count: 2;
-            column-gap: 2.4rem;
-        }
-
-        @media (max-width: 980px) {
-            .wrap {
-                grid-template-columns: 1fr;
-            }
-
-            .article {
-                column-count: 1;
-            }
-        }
-
-        h2,
-        h3 {
-            break-inside: avoid;
-            line-height: 1.2;
-            margin: 1.6rem 0 .6rem;
-            font-family: "Playfair Display", serif;
-            font-weight: 800;
-            scroll-margin-top: calc(var(--nav-h) + 10px);
+        h1 {
+            font-size: clamp(28px, 4vw, 40px);
+            line-height: 1.15;
+            margin: 0 0 6px
         }
 
         h2 {
-            font-size: 28px;
-            border-top: 1px solid var(--rule);
-            border-bottom: 1px solid var(--rule);
-            padding: .35rem 0;
+            margin: 28px 0 10px;
+            font-size: clamp(20px, 3vw, 28px);
+            line-height: 1.2
         }
 
         h3 {
-            font-size: 22px;
+            margin: 20px 0 8px;
+            font-size: clamp(18px, 2.5vw, 22px)
         }
 
-        p {
-            margin: .65rem 0;
-        }
-
-        .lead:first-letter {
-            float: left;
-            font-family: "Playfair Display", serif;
-            font-size: 3.3rem;
-            line-height: .85;
-            padding: .2rem .5rem .2rem 0;
-            font-weight: 800;
-            color: var(--accent);
-        }
-
-        .kicker {
-            display: inline-flex;
-            gap: .6rem;
-            align-items: center;
-            font-variant: all-small-caps;
-            letter-spacing: 1px;
-            font-weight: 800;
-            border: 1px solid var(--rule);
-            padding: .25rem .6rem;
-            margin: .25rem 0 .75rem;
-            color: var(--accent);
-            background: var(--card);
-        }
-
-        .rule {
-            border-top: 1px solid var(--rule);
-            margin: 1.1rem 0;
-        }
-
-        .note {
-            background: var(--panel);
-            border: 1px solid var(--rule);
-            padding: .8rem 1rem;
-            color: var(--ink);
-            opacity: .95;
-            box-shadow: 0 1px 0 rgba(0, 0, 0, .04);
-            break-inside: avoid;
-        }
-
-        .pull {
-            font-family: "Playfair Display", serif;
-            font-size: 22px;
-            line-height: 1.35;
-            font-weight: 600;
-            padding: .8rem 1rem;
-            background: var(--card);
-            border-left: 4px solid var(--accent);
-            color: var(--ink);
-            margin: 1rem 0;
-            break-inside: avoid;
-        }
-
-        aside {
-            position: sticky;
-            top: calc(var(--nav-h) + 10px);
-            align-self: start;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .panel {
-            border: 1px solid var(--rule);
-            background: var(--panel);
-            padding: 1rem;
-            box-shadow: var(--shadow);
-            border-radius: 10px;
-        }
-
-        #map {
-            height: 440px;
-            border: 1px solid var(--rule);
-            background: var(--card);
-            box-shadow: var(--shadow);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .5rem;
-        }
-
-        .chip {
+        .tag {
             display: inline-flex;
             align-items: center;
-            gap: .4rem;
-            padding: .35rem .6rem;
-            border: 1px solid var(--rule);
-            background: var(--chip);
+            gap: 8px;
+            background: linear-gradient(90deg, #3b82f6 0, #22d3ee 100%);
+            color: #001018;
+            padding: 6px 12px;
             border-radius: 999px;
-            font-size: .92rem;
-            cursor: pointer;
-            user-select: none;
+            font-weight: 700;
+            letter-spacing: .2px;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, .25) inset;
         }
 
-        .chip input {
-            accent-color: var(--accent);
+        .grid {
+            display: grid;
+            gap: 18px
         }
 
-        .legend .key {
-            display: flex;
+        .grid.cols-2 {
+            grid-template-columns: 1fr
+        }
+
+        @media (min-width:880px) {
+            .grid.cols-2 {
+                grid-template-columns: 1.1fr .9fr
+            }
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, .01)), var(--card);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px;
+        }
+
+        .muted {
+            color: var(--muted)
+        }
+
+        .pill {
+            display: inline-flex;
             align-items: center;
-            gap: .5rem;
-            margin: .1rem 0;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(255, 255, 255, .06);
+            font-size: 14px
+        }
+
+        /* Checklist s kvačicom */
+        ul.check {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0
+        }
+
+        ul.check li {
+            padding-left: 28px;
+            position: relative;
+            margin: 8px 0
+        }
+
+        ul.check li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--ok)
+        }
+
+        /* Legenda i točkice */
+        .legend {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px
         }
 
         .dot {
             width: 12px;
             height: 12px;
-            border-radius: 50%;
+            border-radius: 999px;
             display: inline-block;
+            margin-right: 6px
         }
 
-        .dot.danger {
-            background: var(--danger);
+        /* Karta */
+        .mapWrap {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, .08);
+            box-shadow: var(--shadow)
         }
 
-        .dot.safe {
-            background: var(--safe);
+        #map {
+            height: 520px;
+            min-height: 360px
         }
 
-        .dot.event {
-            background: var(--event);
-        }
-
-        .gallery {
-            margin-top: 18px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
-        }
-
-        @media (max-width:680px) {
-            .gallery {
-                grid-template-columns: 1fr;
-            }
-        }
-
+        /* Mediji */
         figure {
             margin: 0;
-            border: 1px solid var(--rule);
-            background: var(--card);
-            break-inside: avoid;
-            box-shadow: 0 1px 0 rgba(0, 0, 0, .04);
-            border-radius: 8px;
+            padding: 0;
+            border-radius: 14px;
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, .08);
+            box-shadow: var(--shadow);
+            background: #0f2636
         }
 
         figure img {
-            width: 100%;
-            height: auto;
-            display: block;
-            filter: grayscale(100%) contrast(1.05) saturate(.75);
-            transition: filter .2s ease;
+            width: 100%
         }
 
-        figure:hover img {
-            filter: grayscale(0%) contrast(1.05) saturate(1);
+        figcaption {
+            font-size: 14px;
+            color: var(--muted);
+            padding: 10px 12px;
+            border-top: 1px solid rgba(255, 255, 255, .08)
         }
 
-        [data-theme="dark"] figure img {
-            filter: grayscale(100%) contrast(1.05) saturate(.7) brightness(.9);
-        }
-
-        .timeline {
-            list-style: none;
-            margin: 0;
-            padding: 0;
+        /* Dani/itinerar — opcionalna 2 kolone na širokom ekranu */
+        .days {
             display: grid;
-            gap: .8rem;
+            gap: 16px
         }
 
-        .timeline li {
-            padding: .6rem .75rem;
-            border: 1px dashed var(--rule);
-            background: var(--card);
-            border-radius: 8px;
+        @media (min-width:960px) {
+            .days {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        /* Istaknuto */
+        .callout {
+            border-left: 4px solid var(--brand);
+            padding: 10px 14px;
+            background: rgba(70, 189, 241, .08);
+            border-radius: 10px;
+            margin: 12px 0
+        }
+
+        .numbers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px
         }
 
         footer {
-            margin: 28px auto 40px;
-            max-width: 1320px;
-            padding: 0 20px;
-            color: var(--muted);
-            border-top: 3px double var(--rule);
-            padding-top: 14px;
-            font-size: .95rem;
+            margin-top: 40px;
+            font-size: 14px;
+            color: var(--muted)
+        }
+
+        code.inline {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            background: rgba(255, 255, 255, .08);
+            padding: .2em .45em;
+            border-radius: 7px
+        }
+
+        /* Člankoviti raspored */
+        .article {
+            line-height: 1.8
+        }
+
+        .article .day {
+            overflow: auto;
+            margin-bottom: 18px
+        }
+
+        figure.float {
+            max-width: 420px
+        }
+
+        figure.float.right {
+            float: right;
+            margin: 4px 0 14px 18px
+        }
+
+        figure.float.left {
+            float: left;
+            margin: 4px 18px 14px 0
+        }
+
+        @media (max-width:760px) {
+
+            figure.float.right,
+            figure.float.left {
+                float: none;
+                margin: 12px 0;
+                max-width: 100%
+            }
+        }
+
+        /* Pristupačnost */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                scroll-behavior: auto
+            }
+        }
+
+        /* Print */
+        @media print {
+            :root {
+                --bg: #ffffff;
+                --text: #111827
+            }
+
+            body {
+                background: #fff;
+                color: #111827
+            }
+
+            .card,
+            .mapWrap,
+            figure {
+                box-shadow: none;
+                border-color: #ddd
+            }
+
+            .tag,
+            .callout {
+                background: #fff;
+                color: #111;
+                border: none
+            }
+
+            a {
+                text-decoration: underline
+            }
         }
     </style>
 </head>
 
 <body>
-    <!-- NAVBAR -->
-    <nav id="topbar" class="topbar">
-        <a class="brand" href="#top">Napulj za Ninu</a>
-
-        <div class="links" aria-label="Navigacija">
-            <a href="#manifest">Manifest</a>
-            <a href="#kvartovi">Kvartovi</a>
-            <a href="#casefiles">Case files</a>
-            <a href="#itinerari">Itinerari</a>
-            <a href="#galerija">Galerija</a>
-            <a href="#karta">Karta</a>
-        </div>
-
-        <div class="theme-seg" role="group" aria-label="Tema">
-            <button class="seg" data-mode="light" aria-pressed="false">☀︎</button>
-            <button class="seg" data-mode="auto" aria-pressed="true">Auto</button>
-            <button class="seg" data-mode="dark" aria-pressed="false">🌙</button>
-        </div>
-
-        <button id="navToggle" class="nav-btn" aria-expanded="false" aria-controls="dropdown">☰</button>
-    </nav>
-
-    <!-- MOBILE DROPDOWN -->
-    <div id="dropdown" class="dropdown" hidden>
-        <div class="menu">
-            <a href="#manifest">Manifest</a>
-            <a href="#kvartovi">Kvartovi</a>
-            <a href="#casefiles">Case files</a>
-            <a href="#itinerari">Itinerari</a>
-            <a href="#galerija">Galerija</a>
-            <a href="#karta">Karta</a>
-        </div>
-    </div>
-
-    <a id="top"></a>
     <div class="wrap">
+        <div class="banner" aria-hidden="true"></div>
         <header>
-            <div class="masthead">VODIĆ KROZ NAPULJ ZA NINU</div>
-            <div class="dek">Sutra stižeš. Ovo je tvoj kratki, drski, ali korisni kompas: gdje šetati, gdje usporiti,
-                kako se nasmijati — i kako se vratiti s pričom, a ne s prijavom štete.</div>
+            <span class="tag">Napulj — sigurnost & itinerar (4 dana)</span>
+            <h1>Kako biti siguran u Napulju i što sve vidjeti u 4 dana</h1>
+            <p class="muted">Ažurirano: rujan 2025 — Praktikum za znatiželjne, s dozom autoironije (u stilu Dnevnika
+                Bridget Jones).</p>
         </header>
 
-        <!-- ===================== Lijevi stupci: TEKST ===================== -->
-        <main class="article">
-            <p class="kicker">satira s ugrađenim airbagom</p>
-            <p class="lead"><strong>Nina, ovo je tvoj itinerar razuma.</strong> Ne lovi dramu, prepoznaj je i zaobiđi.
-                Espresso je saveznik; vespa nije. Vrati se s oba džepa.</p>
-
-            <h2 id="manifest">Manifest preživljavanja</h2>
-            <p><strong>Tvoje tijelo, tvoja granica.</strong> <em>Basta</em> je cijela rečenica. Nakit minimalno;
-                <strong>crossbody</strong> sprijeda, zatvarač gore; telefon ne drži uz rub kolnika. Bar/hotel = ambasada
-                sigurnosti. U gužvi: torba naprijed, ruke preko patenta. Karte čitaj u izlogu.
-            </p>
-            <p><strong>Red flag bingo:</strong> “besplatne” narukvice/ruže; dječje peticije; trio pita–gura–bere; skuter
-                duet koji uspori uz tebe. Odgovor: tanak osmijeh, <em>No, grazie</em>, korak dublje na nogostup i u prvi
-                lokal.</p>
-            <div class="note"><strong>Set-up za sutra:</strong> powerbank; rezervna kartica + gotovina skriveno; adresa
-                smještaja na papiriću; kopije dokumenata digitalno; lažni novčanik (10–20 € + stare kartice); kosa u
-                rep/kapuljača; 112 na brzom biranju.</div>
-
-            <h2 id="kvartovi">Kartografski horoskop (kvartovi & reputacije)</h2>
-            <h3>Zone “drži oči otvorene”</h3>
-            <p><strong>Quartieri Spagnoli</strong> (šarm/usko; noću glavne crte), <strong>Forcella / Via Duomo</strong>
-                (gušće; kompaktna torba), <strong>Rione Sanità</strong> (rani stol), <strong>Piazza Garibaldi /
-                    Centrale</strong> (pickpocket HQ), <strong>Spaccanapoli</strong> (šetnja da, mobitel nije fenjer).
-                <strong>Scampia</strong> & <strong>Secondigliano</strong> — periferije s teškom reputacijom; bez
-                lokalca/razloga: ne.
-            </p>
-            <h3>Antidot — ljepota bez drame</h3>
-            <p><strong>Lungomare</strong>, <strong>Castel dell’Ovo</strong>, <strong>Vomero</strong>,
-                <strong>Pignasecca</strong> (danju), <strong>Piazza Bellini</strong> (ranije navečer),
-                <strong>Chiaia</strong>, <strong>Murales Maradona</strong> (danju).
-            </p>
-
-            <div class="pull">“Bar je crkva, telefon nije fenjer. Humor je štit, granice su zid.”</div>
-
-            <h2 id="casefiles">Case files</h2>
-            <ul class="timeline">
-                <li><strong>Faida di Scampia (2000-e)</strong> — obračuni oko “Vele di Scampia”. Danas u transformaciji;
-                    reputacija ostala. <small>Orijentir: Scampia (sjever).</small></li>
-                <li><strong>Forcella — tragičan slučaj (2004)</strong> — medijski zabilježena smrt djevojke tijekom
-                    obračuna. <small>Oko Via Forcella / Via Duomo.</small></li>
-                <li><strong>Secondigliano</strong> — povijesno uporište klanova; česte policijske akcije. <small>Uz
-                        Scampiju, sjever.</small></li>
-            </ul>
-            <p class="note">Orijentiri javne reputacije, ne pozivnice. Svrha: znati → izbjegavati nepotreban rizik.</p>
-
-            <h2 id="itinerari">Itinerar (za sutra + 3 dana)</h2>
-            <h3>Dan 1</h3>
-            <p><strong>Pignasecca</strong> (jutro): sitniš pri ruci. <strong>Spaccanapoli</strong> (podne): barovi su
-                pit-stop. <strong>Lungomare</strong> (večer): sladoled + vjetar; povratak taksijem/prometnom rutom.</p>
-            <h3>Dan 2</h3>
-            <p><strong>Vomero</strong> (kava + pogled). <strong>Forcella/centar</strong> (popodne): telefon iznad torbe.
-                <strong>Sanità</strong> (rani stol): rezervacija; taksi natrag.
-            </p>
-            <h3>Dan 3</h3>
-            <p>Tržnice/pećnice/tave. <strong>Galleria Umberto I</strong> i <strong>Piazza del Plebiscito</strong> za
-                monumentalno bez drame.</p>
-            <h3>Dan 4</h3>
-            <p><strong>Castel dell’Ovo</strong> ujutro. Suvenir: priča o najhrskavijoj pizzi.</p>
-
-            <div class="rule"></div>
-
-            <h2 id="galerija">Galerija (ulice & prizori)</h2>
-            <div class="gallery">
-                <figure>
-                    <img loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous"
-                        src="https://upload.wikimedia.org/wikipedia/commons/9/90/Napoli%2C_Murales_Maradona_in_quartiere_Spagnoli_02.jpg"
-                        data-fallback="https://commons.wikimedia.org/wiki/Special:FilePath/Napoli%2C%20Murales%20Maradona%20in%20quartiere%20Spagnoli%2002.jpg"
-                        alt="Murales Maradona — Quartieri Spagnoli">
-                    <figcaption>Murales Maradona — ikona grada (danju!).</figcaption>
-                </figure>
-
-                <figure>
-                    <img loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous"
-                        src="https://upload.wikimedia.org/wikipedia/commons/4/4d/Napoli%2C_Galleria_Umberto_I.jpg"
-                        data-fallback="https://commons.wikimedia.org/wiki/Special:FilePath/Napoli%2C%20Galleria%20Umberto%20I.jpg"
-                        alt="Galleria Umberto I — unutrašnjost">
-                    <figcaption>Galleria Umberto I — kupola, mramor i predah.</figcaption>
-                </figure>
-
-                <figure>
-                    <img loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous"
-                        src="https://commons.wikimedia.org/wiki/Special:FilePath/Quartieri%20Spagnoli,%20Naples%2020230622%2009.jpg"
-                        alt="Quartieri Spagnoli">
-                    <figcaption>Quartieri Spagnoli — uske ulice i veš.</figcaption>
-                </figure>
-
-                <figure>
-                    <img loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous"
-                        src="https://commons.wikimedia.org/wiki/Special:FilePath/Napoli%20Centrale%20railway%20station%20in%202018.12.jpg"
-                        alt="Napoli Centrale">
-                    <figcaption>Napoli Centrale / Piazza Garibaldi — pickpocket HQ.</figcaption>
-                </figure>
-
-                <figure>
-                    <img loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous"
-                        src="https://commons.wikimedia.org/wiki/Special:FilePath/Panoramica%20dal%20lungomare%20di%20Napoli%20sul%20golfo.jpg"
-                        alt="Lungomare">
-                    <figcaption>Lungomare Caracciolo — šetnica i more kao sedativ.</figcaption>
-                </figure>
-
-                <figure>
-                    <img loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous"
-                        src="https://commons.wikimedia.org/wiki/Special:FilePath/Castel%20dell-Ovo.JPG"
-                        alt="Castel dell’Ovo">
-                    <figcaption>Castel dell’Ovo — fotogenična tvrđava.</figcaption>
-                </figure>
-
-                <figure>
-                    <img loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous"
-                        src="https://commons.wikimedia.org/wiki/Special:FilePath/View%20of%20the%20Gulf%20of%20Naples%20from%20the%20Hill%20of%20Vomero.jpg"
-                        alt="Vomero pogled">
-                    <figcaption>Vomero — kava + panorame.</figcaption>
-                </figure>
-
-                <figure>
-                    <img loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous"
-                        src="https://commons.wikimedia.org/wiki/Special:FilePath/Napoli%20mercato%20Pignasecca.jpg"
-                        alt="Pignasecca">
-                    <figcaption>Pignasecca — street-food (danju).</figcaption>
-                </figure>
-            </div>
-        </main>
-
-        <!-- ===================== Desni stupac: KARTA + PANELI ===================== -->
-        <aside id="karta">
-            <div class="panel">
-                <div class="filters" aria-label="Filtri slojeva">
-                    <label class="chip"><input type="checkbox" id="fDanger" checked> 🔴 Oprezne zone</label>
-                    <label class="chip"><input type="checkbox" id="fSafe" checked> 🟢 Opuštenije</label>
-                    <label class="chip"><input type="checkbox" id="fEvent" checked> 🟣 Događaji/“case files”</label>
+        <section class="grid cols-2">
+            <article class="card">
+                <h2>Sigurnost ukratko</h2>
+                <ul class="check">
+                    <li>Drži torbu ispred sebe; novčanik i putovnicu nosi ispod jakne ili u <em>money beltu</em> (znam,
+                        nije glam, ali ni krađa nije).</li>
+                    <li>Najviše opreza: <strong>Napoli Centrale / Piazza Garibaldi</strong>,
+                        <strong>Circumvesuviana</strong> i večernje uske uličice (aka „vježba fokusa bez kave”).
+                    </li>
+                    <li>Koristi službeni taksi (pitaj za <em>tariffa predeterminata</em>) ili <a
+                            href="https://www.aeroportodinapoli.it/en/by-bus" target="_blank"
+                            rel="noreferrer noopener">Alibus</a> (≈ 5–6 €) aerodrom ↔ centar ↔ luka. Da, autobus koji
+                        stvarno ide.</li>
+                    <li>Ne nosi satove/lančiće „na izvol'te” (sjajiš kao delfin u zaljevu, ali ajmo to ostaviti suncu).
+                    </li>
+                    <li>U gužvi pazi na skutere (dolaze „niotkuda”, kao misli u 3 ujutro).</li>
+                    <li>Izbjegavaj „potpiši peticiju”, „narukvica gratis” i „pao ti je prsten” — klasici prevare žanra.
+                    </li>
+                    <li>Bankomati: koristi one unutar banaka; Euronet i rođaci vole tvoje naknade više nego ti njih.
+                    </li>
+                </ul>
+                <div class="callout">
+                    <strong>Brojevi za hitne slučajeve:</strong>
+                    <div class="numbers">
+                        <span class="pill">112 — jedinstveni EU broj</span>
+                        <span class="pill">113 — policija</span>
+                        <span class="pill">115 — vatrogasci</span>
+                        <span class="pill">118 — hitna</span>
+                    </div>
+                    <div class="muted" style="margin-top:6px">Nadamo se da neće trebati, ali mirna glava je nova crna.
+                        Aplikacija <a href="https://www.nue112er.it/en" target="_blank" rel="noreferrer noopener">Where
+                            Are U</a> bira broj i šalje lokaciju brže nego što kažeš „sfogliatella”.</div>
                 </div>
-            </div>
+            </article>
 
-            <div id="map" aria-label="Karta Napulja s označenim zonama i događajima">Učitavam kartu…</div>
+            <aside class="card">
+                <h2>Brzi plan (4 dana)</h2>
+                <ol style="margin:0 0 6px 20px">
+                    <li><strong>Centro Storico & Spaccanapoli</strong>: Duomo, Sansevero, Napoli Sotterranea, Largo
+                        Maradona. (Da, sve stane — uz gelato pauze.)</li>
+                    <li><strong>Muzeji & više</strong>: MANN, Plebiscito & Kraljevska palača, Galleria Borbonica, suton
+                        na Castel dell'Ovo. (Romantika opcionalna, fotke obavezne.)</li>
+                    <li><strong>Rione Sanità & Vomero</strong>: Katakombe, „Holy Mile”, Castel Sant'Elmo & Certosa.
+                        (Koraci na funikularu se ne broje kao kardio… ili da?)</li>
+                    <li><strong>Izlet</strong>: Pompeji (+ Vezuv) ili Herkulanej. (Krema za sunce i boca vode su glavni
+                        likovi.)</li>
+                </ol>
+                <p class="muted">Sve poveznice i karte niže. Ako zaboraviš — nisi jedini, zapisali smo za tebe.</p>
+            </aside>
+        </section>
 
-            <div class="panel legend">
-                <div class="key"><span class="dot danger"></span> Zone povećanog opreza</div>
-                <div class="key"><span class="dot safe"></span> “Sigurnije/opuštenije” zone</div>
-                <div class="key"><span class="dot event"></span> Povijesni događaji / medijski slučajevi</div>
-                <p style="margin:.6rem 0 0;color:var(--muted);">Orijentacijska karta reputacija i javno poznatih
-                    slučajeva. Cilj: informiranost, ne senzacija.</p>
+        <section>
+            <h2>Karta — opasne & zanimljive zone</h2>
+            <div class="legend">
+                <span class="pill"><span class="dot" style="background:var(--ok)"></span> Zanimljivo</span>
+                <span class="pill"><span class="dot" style="background:var(--caution)"></span> Povećan oprez</span>
+                <span class="pill"><span class="dot" style="background:var(--danger)"></span> Izbjegavati</span>
+                <span class="pill"><span class="dot" style="background:#60a5fa"></span> Vruće točke (džepne
+                    krađe)</span>
             </div>
-        </aside>
+            <div class="mapWrap" style="margin-top:12px">
+                <div id="map"></div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Itinerar po danima (linkovi za ulaznice i info)</h2>
+            <h3>Dan 1 — Centro Storico & Spaccanapoli</h3>
+            <ul>
+                <li><a href="https://www.museosansevero.it/en/" target="_blank" rel="noreferrer noopener">Cappella
+                        Sansevero (Veiled Christ)</a> — <strong>obavezna rezervacija</strong>; jutarnji termin = manja
+                    gužva, više zen.</li>
+                <li><a href="https://www.napolisotterranea.org/en/" target="_blank" rel="noreferrer noopener">Napoli
+                        Sotterranea</a> — podzemni tuneli i cisterne, vođene ture (i hladnije je, kosa zahvaljuje).</li>
+                <li>Spaccanapoli & Via dei Tribunali — crkve, obrti, ulična hrana; <em>frittatina</em> i <em>cuoppo</em>
+                    (da, dijeta počinje „sutra”).</li>
+                <li>Quartieri Spagnoli — <a href="https://www.citywalkers.eu/en/naples-murals-maradona/" target="_blank"
+                        rel="noreferrer noopener">Largo/Murales Maradona</a>; navečer ostani na glavnim ulicama
+                    (romantična šetnja, ali praktična).</li>
+            </ul>
+
+            <h3>Dan 2 — MANN, Plebiscito, Galleria Borbonica, Castel dell'Ovo</h3>
+            <ul>
+                <li><a href="https://mann-napoli.it/" target="_blank" rel="noreferrer noopener">MANN — Nacionalni
+                        arheološki muzej</a> (Farnese! Mozaici! I klima koja spašava).</li>
+                <li><a href="https://palazzorealedinapoli.org/en/visitor-information/" target="_blank"
+                        rel="noreferrer noopener">Kraljevska palača</a> & Piazza del Plebiscito — široko, elegantno,
+                    idealno za „sasvim slučajne” fotke.</li>
+                <li><a href="https://www.galleriaborbonica.com/en/" target="_blank" rel="noreferrer noopener">Galleria
+                        Borbonica</a> — tuneli iz 19. st.; rezervacija pomaže da ne ostaneš na „čekanju do sutra”.</li>
+                <li>Šetnja <a href="https://commons.wikimedia.org/wiki/Castel_dell%27Ovo" target="_blank"
+                        rel="noreferrer noopener">Castel dell'Ovo</a> & Lungomare — zalazak koji izgleda kao filter, ali
+                    je stvaran.</li>
+            </ul>
+
+            <h3>Dan 3 — Rione Sanità & Vomero</h3>
+            <ul>
+                <li><a href="https://catacombedinapoli.it/en/" target="_blank" rel="noreferrer noopener">Katakombe San
+                        Gennaro / San Gaudioso</a> + „Holy Mile” (lokalna inicijativa koja stvarno mijenja kvart — i
+                    raspoloženje).</li>
+                <li>Uspon na <a href="https://commons.wikimedia.org/wiki/Castel_Sant%27Elmo_(Naples)" target="_blank"
+                        rel="noreferrer noopener">Castel Sant'Elmo</a> i <em>Certosa di San Martino</em> — panorame zbog
+                    kojih ćeš obećati da opet dolaziš (i stvarno možda hoćeš).</li>
+            </ul>
+
+            <h3>Dan 4 — Pompeji (+ Vezuv) ili Herkulanej</h3>
+            <ul>
+                <li><a href="https://pompeiisites.org/en/buy-tickets/" target="_blank" rel="noreferrer noopener">Pompeji
+                        — službene ulaznice</a> — 4–6 sati povratka u prošlost (i 10.000 koraka, barem).</li>
+                <li><a href="https://vesuviopark.vivaticket.it/en" target="_blank" rel="noreferrer noopener">Vezuv —
+                        Gran Cono</a> — terminirane karte; shuttle iz Ercolano Scavi; tenisice > sandale (znam, cute su,
+                    ali ne).</li>
+                <li><a href="https://ercolano.cultura.gov.it/biglietti/" target="_blank"
+                        rel="noreferrer noopener">Herkulanej</a> — kompaktniji i detaljniji; za dane „manje je više”.
+                </li>
+                <li><strong>Prijevoz:</strong> Circumvesuviana uz oprez (torba naprijed), ili <em>Campania Express</em>
+                    (skuplji, ali s manje „uzbuđenja”).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Prijevoz: praktično</h2>
+            <ul>
+                <li><strong>Aerodrom ↔ centar/luka:</strong> <a href="https://www.aeroportodinapoli.it/en/by-bus"
+                        target="_blank" rel="noreferrer noopener">Alibus</a> (≈ 5–6 €) — staje na Garibaldiju i Molo
+                    Beverello (i stvarno dolazi, nisam ja izmislila).</li>
+                <li><strong>Taksi:</strong> traži <em>tariffa predeterminata</em> (fiksne tarife). Službeni cjenik Taxi
+                    Napoli 8888 — PDF <a
+                        href="https://www.taxinapoli.it/wp-content/uploads/tariffario-taxi-2024-eng.pdf" target="_blank"
+                        rel="noreferrer noopener">ovdje</a>.</li>
+                <li><strong>Metro/Funicolare:</strong> M1 (Toledo, Museo, Università) je zvijezda. Validiraj kartu (da,
+                    i to je stvar).</li>
+                <li><strong>Circumvesuviana:</strong> gužva i džeparoši se vole pojaviti bez najave — kao i bivši u
+                    DM-ovima.</li>
+                <li><strong>Ridesharing:</strong> Uber/Bolt rade kao taksi; cijena se prikazuje unaprijed (što je lijep
+                    osjećaj, napokon nešto predvidljivo).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Jelo & kava (kratko)</h2>
+            <ul>
+                <li>Pizza „klasik”: <a href="https://www.damichele.net/en/" target="_blank"
+                        rel="noreferrer noopener">L'Antica Pizzeria Da Michele</a>, <a href="https://www.sorbillo.it/"
+                        target="_blank" rel="noreferrer noopener">Gino e Toto Sorbillo</a>. (Red je dio ceremonije;
+                    disanje na četiri pomaže.)</li>
+                <li>Slatko i espresso: <a href="https://grancaffegambrinus.com/en/" target="_blank"
+                        rel="noreferrer noopener">Gran Caffè Gambrinus</a> — sfogliatella, babà i osjećaj da si u filmu.
+                </li>
+                <li>Tržnica i street food: <a
+                        href="https://www.visitnaples.eu/en/neapolitanity/tales-of-naples/naples-spanish-quarter"
+                        target="_blank" rel="noreferrer noopener">Pignasecca & Quartieri Spagnoli</a> (cuoppo, taralli —
+                    džepovi će šuškati, ali srce sretno).</li>
+                <li><strong>Napomena:</strong> „coperto” (naknada za stol/kruh) moguć; napojnica nije obavezna — ali
+                    osmijeh jest.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Dodatno: smještaj, budžet, aplikacije</h2>
+            <ul>
+                <li><strong>Smještaj:</strong> Centro Storico = živo (i bučno), Chiaia & Vomero = mirnije; oko
+                    Garibaldija — oprez noću (romansa, da; avanturizam, ne).</li>
+                <li><strong>Budžet (orijentacijski):</strong> pizza 6–12 €, espresso 1.20–1.50 €, metro 1.30–2.00 €,
+                    muzeji 8–18 €. (Novčanik preživi, talijanski ormar je već drukčija tema.)</li>
+                <li><strong>Radna vremena:</strong> mnogo muzeja je zatvoreno utorkom — naučeno na teži način (ne moraš
+                    i ti).</li>
+                <li><strong>Aplikacije:</strong> Maps / Moovit, Where Are U (112), Trenitalia/Italo, Taxi 8888 / Uber.
+                    (Da, i dalje koristiš kameru kao skener menija.)</li>
+                <li><strong>Pakiranje:</strong> tenisice, lagana kabanica, torbica preko tijela; kopije dokumenata u
+                    cloudu (mali korak za čovjeka, veliki za mirno spavanje).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Reportaža: 4 dana u Napulju (tekst + fotografije)</h2>
+            <article class="card article">
+                <p>Napulj je slojevit kao lasagna: barokne crkve, podzemni tuneli, kvartovi što trepere od života. Plan
+                    je praktičan, a komentari — potpuno iskreni (Bridget bi bila ponosna).</p>
+
+                <div class="day">
+                    <h3>Dan 1 — Centro Storico & Spaccanapoli</h3>
+                    <figure class="float right">
+                        <img loading="lazy" decoding="async"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                            data-query="spaccanapoli naples" data-caption="Spaccanapoli — povijesna kralježnica grada."
+                            alt="Spaccanapoli u Napulju" />
+                        <figcaption>Spaccanapoli — povijesna kralježnica grada.</figcaption>
+                    </figure>
+                    <p>Jutro u <strong>Cappella Sansevero</strong> (rezervacija, da) i dalje do <strong>Duoma</strong> i
+                        <strong>Santa Chiare</strong>. U pauzi <em>frittatina</em> na Via dei Tribunali — jer proteini.
+                        Popodne <strong>Quartieri Spagnoli</strong> i murali Maradone (fotka koja kaže „volim te” bez
+                        riječi).
+                    </p>
+                    <figure class="float left">
+                        <img loading="lazy" decoding="async"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                            data-query="Cappella Sansevero Naples" data-caption="Cappella Sansevero — Velato Cristo."
+                            alt="Cappella Sansevero" />
+                        <figcaption>Cappella Sansevero — Velato Cristo.</figcaption>
+                    </figure>
+                    <p>Večer: Belvedere (San Martino) ili gelato u centru; ostani na osvijetljenim ulicama (drama neka
+                        ostane u filmovima).</p>
+                </div>
+
+                <div class="day">
+                    <h3>Dan 2 — MANN, Plebiscito, Galleria Borbonica, Castel dell'Ovo</h3>
+                    <figure class="float right">
+                        <img loading="lazy" decoding="async"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                            data-query="Piazza del Plebiscito Naples"
+                            data-caption="Piazza del Plebiscito i Palazzo Reale." alt="Piazza del Plebiscito" />
+                        <figcaption>Piazza del Plebiscito i Palazzo Reale.</figcaption>
+                    </figure>
+                    <p><strong>MANN</strong> (2–3 h), pa <strong>Palazzo Reale</strong> i <strong>Piazza del
+                            Plebiscito</strong>. Poslijepodne <strong>Galleria Borbonica</strong> — malo tajnih tunela,
+                        nula tajnih bivših (hvala bogu).</p>
+                    <figure class="float left">
+                        <img loading="lazy" decoding="async"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                            data-query="Castel dell'Ovo Naples" data-caption="Castel dell'Ovo — najljepši u suton."
+                            alt="Castel dell'Ovo i Lungomare" />
+                        <figcaption>Castel dell'Ovo — najljepši u suton.</figcaption>
+                    </figure>
+                    <p>Zalazak na <strong>Lungomare</strong> — prirodni filter, 0% photoshop, 100% „pošalji mami”.</p>
+                </div>
+
+                <div class="day">
+                    <h3>Dan 3 — Rione Sanità & Vomero</h3>
+                    <figure class="float right">
+                        <img loading="lazy" decoding="async"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                            data-query="Rione Sanita Naples"
+                            data-caption="Rione Sanità — energična četvrt s jakim identitetom." alt="Rione Sanità" />
+                        <figcaption>Rione Sanità — energična četvrt s jakim identitetom.</figcaption>
+                    </figure>
+                    <p>Katakombe <strong>San Gennaro/San Gaudioso</strong> — povijest, hladovina i osjećaj da si Indiana
+                        Jones s boljom frizurom. Zatim funikularom do <strong>Vomera</strong>.</p>
+                    <figure class="float left">
+                        <img loading="lazy" decoding="async"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                            data-query="Castel Sant'Elmo Naples"
+                            data-caption="Castel Sant'Elmo — panoramski pogledi na zaljev." alt="Castel Sant'Elmo" />
+                        <figcaption>Castel Sant'Elmo — panoramski pogledi na zaljev.</figcaption>
+                    </figure>
+                    <p><strong>Certosa di San Martino</strong> — pogledi koji sklapaju primirje između tebe i budilice
+                        sutra ujutro.</p>
+                </div>
+
+                <div class="day">
+                    <h3>Dan 4 — Pompeji (+ Vezuv) ili Herkulanej</h3>
+                    <figure class="float right">
+                        <img loading="lazy" decoding="async"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                            data-query="Pompeii ruins" data-caption="Pompeji — ulice, freske i peristili."
+                            alt="Ruševine Pompeja" />
+                        <figcaption>Pompeji — ulice, freske i peristili.</figcaption>
+                    </figure>
+                    <p><strong>Pompeji</strong> 4–6 h (ulaz Porta Marina), ili kompaktniji <strong>Herkulanej</strong>
+                        2–3 h — ovisno o broju sati sna i kavi jutros.</p>
+                    <figure class="float left">
+                        <img loading="lazy" decoding="async"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                            data-query="Vesuvius crater" data-caption="Vezuv — šetnja rubom kratera (ovisno o vremenu)."
+                            alt="Krater Vezuva" />
+                        <figcaption>Vezuv — šetnja rubom kratera (ovisno o vremenu).</figcaption>
+                    </figure>
+                    <p>Za Vezuv uzmi terminiranu ulaznicu i shuttle iz Ercolano Scavi; ponesi vodu i tenisice — glam
+                        može u torbu, zdrav razum na noge.</p>
+                </div>
+            </article>
+        </section>
+
+        <section>
+            <h2>Više informacija i fotografije (itinerar)</h2>
+            <p class="muted">Radna vremena i cijene se mijenjaju — provjeri službene stranice. (Naučeno nakon što sam
+                došla pred zatvorena vrata i nasmiješila se čuvaru… nije upalilo.)</p>
+            <!-- Linkovi ostaju kao i prije, bez dodatnih šala radi preglednosti -->
+        </section>
+
+        <footer>
+            <p>Fotografije: Pixabay/Wikimedia Commons (autori prema licencama). Karte: © OpenStreetMap contributors.</p>
+            <p>Ovaj vodič je informativan; provjeri radna vremena i uvjete ulaza. Humor uključen, ali sigurnost je
+                ozbiljna stvar. 💙</p>
+        </footer>
     </div>
 
-    <footer>
-        Fotografije: Wikimedia Commons. Karta: OpenStreetMap + Leaflet (&copy; CARTO za dark tiles).
-    </footer>
+    <script>
+        // Opcionalno: postavi svoj Pixabay API ključ (omogućuje kurirane fotografije + potpise autora)
+        // window.PIXABAY_API_KEY = "";
+
+        async function fetchFromPixabay(q, key) {
+            if (!key) return null;
+            const url = `https://pixabay.com/api/?key=${encodeURIComponent(key)}&q=${encodeURIComponent(q)}&image_type=photo&per_page=3&orientation=horizontal&category=travel&order=popular&safesearch=true`;
+            try {
+                const res = await fetch(url);
+                if (!res.ok) return null;
+                const data = await res.json();
+                const hit = (data.hits || [])[0];
+                if (!hit) return null;
+                return {
+                    best: hit.largeImageURL || hit.webformatURL || hit.previewURL,
+                    small: hit.webformatURL || hit.previewURL,
+                    creditHtml: ` Foto: <a href="${hit.pageURL || 'https://pixabay.com/'}" target="_blank" rel="noreferrer noopener">${hit.user || 'Pixabay author'} / Pixabay</a>.`
+                }
+            } catch (e) { return null; }
+        }
+
+        async function fetchFromWikimedia(q) {
+            const api = `https://commons.wikimedia.org/w/api.php?origin=*&format=json&action=query&generator=search&gsrnamespace=6&gsrlimit=1&gsrsearch=${encodeURIComponent(q)}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1280`;
+            try {
+                const res = await fetch(api);
+                if (!res.ok) return null;
+                const data = await res.json();
+                const pages = data?.query?.pages || {};
+                const first = Object.values(pages)[0];
+                const ii = first?.imageinfo?.[0];
+                if (!ii) return null;
+                const best = ii.thumburl || ii.url;
+                const small = ii.thumburl || ii.url;
+                const creditHtml = ` Foto: <a href="https://commons.wikimedia.org/wiki/Special:Search?search=${encodeURIComponent(q)}" target="_blank" rel="noreferrer noopener">Wikimedia Commons</a>.`;
+                return { best, small, creditHtml };
+            } catch (e) { return null; }
+        }
+
+        async function enhanceFigures() {
+            const key = window.PIXABAY_API_KEY;
+            const imgs = document.querySelectorAll('.article figure img[data-query]');
+            for (const img of imgs) {
+                const q = img.getAttribute('data-query');
+                let found = await fetchFromPixabay(q, key);
+                if (!found) found = await fetchFromWikimedia(q);
+                if (!found) continue;
+                const { best, small, creditHtml } = found;
+                if (best) img.src = best;
+                if (small || best) {
+                    img.srcset = [small ? `${small} 640w` : '', best ? `${best} 1280w` : ''].filter(Boolean).join(', ');
+                    img.sizes = '(max-width: 760px) 100vw, 420px';
+                }
+                img.loading = 'lazy'; img.decoding = 'async';
+                const fig = img.closest('figure');
+                const cap = fig && fig.querySelector('figcaption');
+                if (cap && creditHtml) cap.innerHTML = (cap.textContent || '') + creditHtml;
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', enhanceFigures);
+        } else { enhanceFigures(); }
+    </script>
 
     <script>
-        (function () {
-            // ---------- THEME (Light/Dark/Auto) ----------
-            const root = document.documentElement;
-            const segBtns = Array.from(document.querySelectorAll('.theme-seg button'));
-            const mediaDark = window.matchMedia('(prefers-color-scheme: dark)');
+        // Inicijalizacija karte
+        const map = L.map('map', { scrollWheelZoom: true }).setView([40.8518, 14.2681], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
 
-            function effectiveMode(mode) { return mode === 'auto' ? (mediaDark.matches ? 'dark' : 'light') : mode; }
-            function applyTheme(mode) {
-                const eff = effectiveMode(mode);
-                root.setAttribute('data-theme', eff);
-                localStorage.setItem('themeMode', mode);
-                segBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
-                if (window._map && window._lightTiles && window._darkTiles) {
-                    if (eff === 'dark') { window._map.removeLayer(window._lightTiles); window._darkTiles.addTo(window._map); }
-                    else { window._map.removeLayer(window._darkTiles); window._lightTiles.addTo(window._map); }
-                }
-            }
-            const saved = localStorage.getItem('themeMode') || 'auto';
-            applyTheme(saved);
-            mediaDark.addEventListener('change', () => { if ((localStorage.getItem('themeMode') || 'auto') === 'auto') applyTheme('auto'); });
-            segBtns.forEach(b => b.addEventListener('click', () => applyTheme(b.dataset.mode)));
+        // Zone / točke
+        const interesting = [
+            { name: 'Centro Storico / Spaccanapoli', lat: 40.8494, lng: 14.2558, note: 'Povijesno srce grada.' },
+            { name: 'Piazza del Plebiscito', lat: 40.8358, lng: 14.2474, note: 'Reprezentativni trg i Kraljevska palača.' },
+            { name: "Castel dell'Ovo & Lungomare", lat: 40.8277, lng: 14.2470, note: 'Šetnica uz more i tvrđava.' },
+            { name: 'Quartieri Spagnoli (Largo Maradona)', lat: 40.8469, lng: 14.2480, note: 'Murali, street food, živa atmosfera.' },
+            { name: 'Rione Sanità (Katakombe)', lat: 40.8583, lng: 14.2492, note: 'Katakombe i „Holy Mile”.' },
+            { name: "Vomero — Castel Sant'Elmo", lat: 40.8422, lng: 14.2390, note: 'Vidikovci na cijeli zaljev.' }
+        ];
+        const caution = [
+            { name: 'Quartieri Spagnoli (noću oprez)', lat: 40.8469, lng: 14.2480, note: 'Drži se glavnih ulica noću.' },
+            { name: 'Rione Sanità (noću oprez)', lat: 40.8583, lng: 14.2492, note: 'Kulturni uzlet, ali budi svjestan okoline.' },
+            { name: 'Porta Nolana / pijace', lat: 40.8499, lng: 14.2728, note: 'Gužve; pazi na vrijednosti.' }
+        ];
+        const avoid = [
+            { name: 'Scampia', lat: 40.8980, lng: 14.2410, note: 'Periferija bez turističkih atrakcija; izbjegavati, posebno noću.' },
+            { name: 'Secondigliano', lat: 40.8930, lng: 14.2680, note: 'Periferija; izbjegavati kasno navečer.' }
+        ];
+        const hotspots = [
+            { name: 'Napoli Centrale / Piazza Garibaldi', lat: 40.8524, lng: 14.2710, note: 'Džepne krađe; budi fokusiran.' },
+            { name: 'Circumvesuviana (Porta Nolana)', lat: 40.8509, lng: 14.2760, note: 'Oprez na vlakovima prema Pompejima/Herkulaneju.' }
+        ];
 
-            // ---------- NAVBAR auto-hide & dropdown ----------
-            const bar = document.getElementById('topbar');
-            let lastY = window.scrollY;
-            window.addEventListener('scroll', () => {
-                const y = window.scrollY;
-                if (y > lastY && y > 60) bar.classList.add('hide'); else bar.classList.remove('hide');
-                lastY = y;
+        function addCircles(arr, color, radius = 220) {
+            arr.forEach(p => {
+                L.circle([p.lat, p.lng], { radius, color, weight: 2, fillColor: color, fillOpacity: 0.24 })
+                    .addTo(map).bindPopup(`<strong>${p.name}</strong><br>${p.note || ''}`);
             });
+        }
+        addCircles(interesting, '#2dd4bf', 200); // akvamarin
+        addCircles(caution, '#fbbf24', 200);     // sun-žuta
+        addCircles(avoid, '#ef4444', 350);       // crvena
+        addCircles(hotspots, '#60a5fa', 180);    // nebesko plava
 
-            const navToggle = document.getElementById('navToggle');
-            const dropdown = document.getElementById('dropdown');
-            function closeMenu() { dropdown.classList.remove('open'); dropdown.hidden = true; navToggle.setAttribute('aria-expanded', 'false'); }
-            function openMenu() { dropdown.classList.add('open'); dropdown.hidden = false; navToggle.setAttribute('aria-expanded', 'true'); }
-            navToggle.addEventListener('click', () => {
-                const open = dropdown.classList.contains('open');
-                open ? closeMenu() : openMenu();
-            });
-            dropdown.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
-            document.addEventListener('click', (e) => {
-                if (!dropdown.contains(e.target) && !navToggle.contains(e.target)) closeMenu();
-            });
-
-            // ---------- Gallery fallback (images) ----------
-            document.querySelectorAll('img[data-fallback]').forEach(img => {
-                img.addEventListener('error', () => {
-                    const f = img.getAttribute('data-fallback');
-                    if (!img.dataset.tried) { img.dataset.tried = '1'; img.src = f; }
-                });
-            });
-
-            // ---------- MAP ----------
-            function initMap() {
-                if (typeof L === 'undefined') {
-                    const el = document.getElementById('map');
-                    if (el) el.textContent = 'Karta nije učitana (CDN blokiran?). Otvori u drugom pregledniku ili spusti blokade.';
-                    return;
-                }
-                const mode = effectiveMode(localStorage.getItem('themeMode') || 'auto');
-                const map = L.map('map', { scrollWheelZoom: true }).setView([40.8518, 14.2681], 12.4);
-
-                // Base tiles
-                const lightTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap doprinositelji' });
-                const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' });
-                (mode === 'dark' ? darkTiles : lightTiles).addTo(map);
-                window._map = map; window._lightTiles = lightTiles; window._darkTiles = darkTiles;
-
-                const danger = [
-                    {
-                        name: 'Quartieri Spagnoli', lat: 40.8421, lng: 14.2450, note: 'Šarmantno i usko; noću glavne crte.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Quartieri%20Spagnoli,%20Naples%2020230622%2009.jpg'
-                    },
-                    {
-                        name: 'Forcella / Via Duomo', lat: 40.8508, lng: 14.26263, note: 'Gusto i živo; kompaktna torba.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Napoli,%20Duomo%20di%20Napoli.jpg'
-                    },
-                    {
-                        name: 'Rione Sanità', lat: 40.8584, lng: 14.2445, note: 'Idi ranije navečer, rezerviraj.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Rione%20Sanit%C3%A0%201.jpg'
-                    },
-                    {
-                        name: 'Piazza Garibaldi / Napoli Centrale', lat: 40.8515, lng: 14.2698, note: 'Pickpocket bingo; torba naprijed.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Napoli%20Centrale%20railway%20station%20in%202018.12.jpg'
-                    },
-                    {
-                        name: 'Spaccanapoli', lat: 40.84774, lng: 14.25324, note: 'Šetnja da, “fenjer od telefona” ne.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Spaccanapoli%20b%26l.jpg'
-                    }
-                ];
-                const safe = [
-                    {
-                        name: 'Lungomare Caracciolo', lat: 40.83102, lng: 14.22645, note: 'Šetnica + zaljev.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Panoramica%20dal%20lungomare%20di%20Napoli%20sul%20golfo.jpg'
-                    },
-                    {
-                        name: "Castel dell'Ovo", lat: 40.8279, lng: 14.2480, note: 'Simbol na moru.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Castel%20dell-Ovo.JPG'
-                    },
-                    {
-                        name: 'Vomero (pogledi)', lat: 40.8333, lng: 14.2333, note: 'Kava + panorame.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/View%20of%20the%20Gulf%20of%20Naples%20from%20the%20Hill%20of%20Vomero.jpg'
-                    },
-                    {
-                        name: 'Mercato Pignasecca (danju)', lat: 40.84639, lng: 14.24781, note: 'Street-food; torba naprijed.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Napoli%20mercato%20Pignasecca.jpg'
-                    },
-                    {
-                        name: 'Piazza Bellini', lat: 40.850486, lng: 14.251614, note: 'Živo, najljepše ranije navečer.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Piazza%20Bellini%20%28Napoli%29.jpg'
-                    },
-                    {
-                        name: 'Chiaia', lat: 40.83386, lng: 14.22697, note: 'Butici i barovi.',
-                        img: 'https://upload.wikimedia.org/wikipedia/commons/6/6c/Napoli_-_Via_Chiaia.jpg'
-                    },
-                    {
-                        name: 'Murales Maradona', lat: 40.8434, lng: 14.2484, note: 'Ikona grada (danju).',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Napoli%2C%20Murales%20Maradona%20in%20quartiere%20Spagnoli%2002.jpg'
-                    },
-                    {
-                        name: 'Galleria Umberto I', lat: 40.8396, lng: 14.2496, note: 'Kupola i predah.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Napoli%2C%20Galleria%20Umberto%20I.jpg'
-                    },
-                    {
-                        name: 'Piazza del Plebiscito', lat: 40.8358, lng: 14.2488, note: 'Monumentalno i prostrano.',
-                        img: 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Piazza_del_Plebiscito.jpg'
-                    }
-                ];
-                const events = [
-                    {
-                        name: 'Faida di Scampia (2000-e)', lat: 40.9013, lng: 14.23498,
-                        note: 'Serija obračuna povezanih s Camorrom oko “Vele di Scampia”. Danas u transformaciji; reputacija ostala.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Vele%20di%20Scampia%20Di%20Salvo2.jpg'
-                    },
-                    {
-                        name: 'Forcella — tragičan slučaj (2004)', lat: 40.8512, lng: 14.2620,
-                        note: 'Medijski zabilježena smrt djevojke tijekom obračuna. Orijentir: Via Forcella/Via Duomo.',
-                        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Napoli,%20Duomo%20di%20Napoli.jpg'
-                    },
-                    {
-                        name: 'Secondigliano — policijske akcije', lat: 40.9000, lng: 14.2667,
-                        note: 'Povijesno uporište klanova; česte racije i uhićenja.',
-                        img: 'https://upload.wikimedia.org/wikipedia/commons/3/35/Napoli%2C_Secondigliano.jpg'
-                    }
-                ];
-
-                const redStyle = { radius: 8, color: '#9a1e1e', fillColor: '#9a1e1e', fillOpacity: .85 };
-                const greenStyle = { radius: 8, color: '#0f6d3d', fillColor: '#0f6d3d', fillOpacity: .85 };
-                const eventStyle = { radius: 8, color: '#5a48d6', fillColor: '#5a48d6', fillOpacity: .9 };
-                const popup = p => `<strong>${p.name}</strong><br/><em>${p.note}</em><br/>${p.img ? `<a href="${p.img}" target="_blank" rel="noopener">Vidi fotografiju</a>` : ''}`;
-
-                const Ldanger = L.layerGroup(danger.map(p => L.circleMarker([p.lat, p.lng], redStyle).bindPopup(popup(p))));
-                const Lsafe = L.layerGroup(safe.map(p => L.circleMarker([p.lat, p.lng], greenStyle).bindPopup(popup(p))));
-                const Levent = L.layerGroup(events.map(p => L.circleMarker([p.lat, p.lng], eventStyle).bindPopup(popup(p))));
-
-                Ldanger.addTo(map); Lsafe.addTo(map); Levent.addTo(map);
-
-                document.getElementById('fDanger').addEventListener('change', e => e.target.checked ? Ldanger.addTo(map) : map.removeLayer(Ldanger));
-                document.getElementById('fSafe').addEventListener('change', e => e.target.checked ? Lsafe.addTo(map) : map.removeLayer(Lsafe));
-                document.getElementById('fEvent').addEventListener('change', e => e.target.checked ? Levent.addTo(map) : map.removeLayer(Levent));
-            }
-
-            if (document.readyState !== 'loading') initMap();
-            else document.addEventListener('DOMContentLoaded', initMap);
-        })();
+        const all = [...interesting, ...caution, ...avoid, ...hotspots].map(p => [p.lat, p.lng]);
+        map.fitBounds(all, { padding: [30, 30] });
     </script>
 </body>
 
