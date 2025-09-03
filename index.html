@@ -109,4 +109,62 @@
         <div class="day">
             <h2>Dan 2 – Prava doza adrenalina</h2>
             <div class="spot">
-                <img src="https://imgs.search.brave.com/1fYBg-FXIcwZW7RhEWmjGq6RhK14lT1J0I1FdcINtzI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/ZmFzY2luYXRpbmdz/cGFpbi5jb20vbWVk/aWEvZmFzY2luYXRp/bmdzcGFpbi9pbWFn/ZXMvMjAyMi8wMi8x/
+                <img src="https://imgs.search.brave.com/1fYBg-FXIcwZW7RhEWmjGq6RhK14lT1J0I1FdcINtzI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/ZmFzY2luYXRpbmdz/cGFpbi5jb20vbWVk/aWEvZmFzY2luYXRp/bmdzcGFpbi9pbWFn/ZXMvMjAyMi8wMi8x/Ni8yMDIyMDIxNjEw/MDMwMjI5ODk2OC5q/cGc"
+                    alt="Quartieri Spagnoli">
+                <p><b>Quartieri Spagnoli</b> – uske uličice koje mirišu na tjesteninu, marihuanu i benzin s Vespi.</p>
+            </div>
+            <div class="spot">
+                <img src="https://imgs.search.brave.com/PiwqtWnEUQIM37J4GpOiT3KOOJ_Qg4gEfBNftlgxklM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS1jZG4udHJpcGFk/dmlzb3IuY29tL21l/ZGlhL3Bob3RvLW8v/MTUvZjIvNmMvMTMv/aW1nLTIwMTgxMTA3/LTEzMDEwOC1sYXJn/ZWpwZy5qcGc"
+                    alt="Forcella">
+                <p><b>Forcella</b> – povijesno srce Napulja i epicentar Camorre.</p>
+            </div>
+        </div>
+
+        <div class="day">
+            <h2>Dan 3 – Ekstremni turizam</h2>
+            <div class="spot">
+                <img src="https://imgs.search.brave.com/56RFXAtPzrtmGgwqHGj-85XBKtuGAAhvgh-GURep6uI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMuc3F1YXJlc3Bh/Y2UtY2RuLmNvbS9j/b250ZW50L3YxLzYw/MzA0NDRjMmM4ZTFi/NDU2NDJiNGI0Mi8x/NzMyMzY1MjczMDc0/LTE5UUVQWjZERDlM/VE9HTjdKVlIzL0xl/X1ZlbGVfZGlfU2Nh/bXBpYV8wMDEuanBn"
+                    alt="Scampia">
+                <p><b>Scampia</b> – betonska džungla, poznata iz serije <i>Gomorra</i>.</p>
+            </div>
+            <div class="spot">
+                <img src="https://imgs.search.brave.com/bu5m_e8DNAjpll-69rtWSOkYJpA3xaJPvu0wXW9rCX0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS1jZG4udHJpcGFk/dmlzb3IuY29tL21l/ZGlhL3Bob3RvLW8v/MDUvYmYvMWQvODUv/dmV6dXYuanBn"
+                    alt="Vezuv">
+                <p><b>Vezuv</b> – vulkan koji je 79. godine uništio Pompeje i Herkulanej.</p>
+            </div>
+        </div>
+
+        <h2>Karta opasnih i sigurnih zona</h2>
+        <div id="map"></div>
+    </main>
+
+    <footer>
+        <p>© 2025 Crni vodič kroz Napulj – “Preživjeli turisti od 2025.”</p>
+    </footer>
+
+    <script>
+        var map = L.map('map').setView([40.8522, 14.2681], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Sigurne zone
+        L.circle([40.8359, 14.2488], { color: "green", fillColor: "green", fillOpacity: 0.3, radius: 700 })
+            .addTo(map).bindPopup("<b>Piazza del Plebiscito</b>");
+        L.circle([40.8309, 14.2476], { color: "green", fillColor: "green", fillOpacity: 0.3, radius: 600 })
+            .addTo(map).bindPopup("<b>Castel dell’Ovo</b>");
+
+        // Oprez
+        L.circle([40.8410, 14.2480], { color: "yellow", fillColor: "yellow", fillOpacity: 0.4, radius: 600 })
+            .addTo(map).bindPopup("<b>Quartieri Spagnoli</b>");
+        L.circle([40.8529, 14.2634], { color: "yellow", fillColor: "yellow", fillOpacity: 0.4, radius: 600 })
+            .addTo(map).bindPopup("<b>Forcella</b>");
+
+        // Visoki rizik
+        L.circle([40.9095, 14.2320], { color: "red", fillColor: "#f03", fillOpacity: 0.5, radius: 1000 })
+            .addTo(map).bindPopup("<b>Scampia</b>");
+    </script>
+</body>
+
+</html>
